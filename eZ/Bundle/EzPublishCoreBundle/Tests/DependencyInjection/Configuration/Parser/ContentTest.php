@@ -49,83 +49,183 @@ class ContentTest extends AbstractParserTestCase
         );
 
         foreach ($expected as $key => $val) {
-            $this->assertConfigResolverParameterValue($key, $val, 'ezdemo_site');
+            $this->assertConfigResolverParameterValue($key, $val, 'ezdemo_site', false, !is_array($val));
         }
     }
 
     public function contentSettingsProvider()
     {
-        return array(
-            array(
-                array(
-                    'content' => array(
+        return [
+            [
+                [
+                    'content' => [
                         'view_cache' => true,
                         'ttl_cache' => true,
                         'default_ttl' => 100,
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'content.view_cache' => true,
                     'content.ttl_cache' => true,
-                    'content.default_ttl' => 100,
-                ),
-            ),
-            array(
-                array(
-                    'content' => array(
+                    'content.default_ttl' => [
+                        '1XX' => 100,
+                        '2XX' => 100,
+                        '3XX' => 100,
+                        '4XX' => 100,
+                        '5XX' => 100
+                    ],
+                ],
+            ],
+            [
+                [
+                    'content' => [
                         'view_cache' => false,
                         'ttl_cache' => false,
                         'default_ttl' => 123,
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'content.view_cache' => false,
                     'content.ttl_cache' => false,
-                    'content.default_ttl' => 123,
-                ),
-            ),
-            array(
-                array(
-                    'content' => array(
+                    'content.default_ttl' => [
+                        '1XX' => 123,
+                        '2XX' => 123,
+                        '3XX' => 123,
+                        '4XX' => 123,
+                        '5XX' => 123
+                    ],
+                ],
+            ],
+            [
+                [
+                    'content' => [
                         'view_cache' => false,
-                    ),
-                ),
-                array(
+                    ],
+                ],
+                [
                     'content.view_cache' => false,
                     'content.ttl_cache' => true,
-                    'content.default_ttl' => 60,
-                ),
-            ),
-            array(
-                array(
-                    'content' => array(
-                        'tree_root' => array('location_id' => 123),
-                    ),
-                ),
-                array(
+                    'content.default_ttl' => [
+                        '1XX' => 60,
+                        '2XX' => 60,
+                        '3XX' => 60,
+                        '4XX' => 60,
+                        '5XX' => 60
+                    ],
+                ],
+            ],
+            [
+                [
+                    'content' => [
+                        'tree_root' => ['location_id' => 123],
+                    ],
+                ],
+                [
                     'content.view_cache' => true,
                     'content.ttl_cache' => true,
-                    'content.default_ttl' => 60,
+                    'content.default_ttl' => [
+                        '1XX' => 60,
+                        '2XX' => 60,
+                        '3XX' => 60,
+                        '4XX' => 60,
+                        '5XX' => 60
+                    ],
                     'content.tree_root.location_id' => 123,
-                ),
-            ),
-            array(
-                array(
-                    'content' => array(
-                        'tree_root' => array(
+                ],
+            ],
+            [
+                [
+                    'content' => [
+                        'tree_root' => [
                             'location_id' => 456,
-                            'excluded_uri_prefixes' => array('/media/images', '/products'),
-                        ),
-                    ),
-                ),
-                array(
+                            'excluded_uri_prefixes' => ['/media/images', '/products'],
+                        ],
+                    ],
+                ],
+                [
                     'content.view_cache' => true,
                     'content.ttl_cache' => true,
-                    'content.default_ttl' => 60,
+                    'content.default_ttl' => [
+                        '1XX' => 60,
+                        '2XX' => 60,
+                        '3XX' => 60,
+                        '4XX' => 60,
+                        '5XX' => 60
+                    ],
                     'content.tree_root.location_id' => 456,
-                    'content.tree_root.excluded_uri_prefixes' => array('/media/images', '/products'),
-                ),
-            ),
-        );
+                    'content.tree_root.excluded_uri_prefixes' => ['/media/images', '/products'],
+                ],
+            ],
+            [
+                [
+                    'content' => [
+                        'view_cache' => true,
+                        'ttl_cache' => true,
+                        'default_ttl' => [
+                            '1XX' => 30
+                        ],
+                    ],
+                ],
+                [
+                    'content.view_cache' => true,
+                    'content.ttl_cache' => true,
+                    'content.default_ttl' => [
+                        '1XX' => 30,
+                        '2XX' => 60,
+                        '3XX' => 60,
+                        '4XX' => 60,
+                        '5XX' => 60
+                    ],
+                ],
+            ],
+            [
+                [
+                    'content' => [
+                        'view_cache' => true,
+                        'ttl_cache' => true,
+                        'default_ttl' => [],
+                    ],
+                ],
+                [
+                    'content.view_cache' => true,
+                    'content.ttl_cache' => true,
+                    'content.default_ttl' => [
+                        '1XX' => 60,
+                        '2XX' => 60,
+                        '3XX' => 60,
+                        '4XX' => 60,
+                        '5XX' => 60
+                    ],
+                ],
+            ],
+            [
+                [
+                    'content' => [
+                        'view_cache' => true,
+                        'ttl_cache' => true,
+                        'default_ttl' => [
+                            '302' => 0,
+                            '3XX' => 60,
+                            '404' => 60,
+                            '4XX' => 30,
+                            '5XX' => 10
+                        ],
+                    ],
+                ],
+                [
+                    'content.view_cache' => true,
+                    'content.ttl_cache' => true,
+                    'content.default_ttl' => [
+                        '302' => 0,
+                        '3XX' => 60,
+                        '404' => 60,
+                        '4XX' => 30,
+                        '1XX' => 60,
+                        '2XX' => 60,
+                        '5XX' => 10,
+                    ],
+                ],
+            ],
+        ];
     }
 }

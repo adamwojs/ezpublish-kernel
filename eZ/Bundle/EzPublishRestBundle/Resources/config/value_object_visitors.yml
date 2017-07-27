@@ -842,6 +842,7 @@ services:
         parent: ezpublish_rest.output.value_object_visitor.base
         arguments:
             - "@ezpublish.config.resolver"
+            - "@ezpublish.http_cache.content.ttl_resolver"
         calls:
             - [setRequestStack, ["@request_stack"]]
         tags:

@@ -9,6 +9,7 @@
 namespace eZ\Publish\Core\REST\Server\Tests\Output\ValueObjectVisitor;
 
 use eZ\Publish\Core\MVC\ConfigResolverInterface;
+use eZ\Publish\Core\MVC\Symfony\Cache\Content\TtlResolverInterface;
 use eZ\Publish\Core\REST\Common\Tests\Output\ValueObjectVisitorBaseTest;
 use eZ\Publish\Core\REST\Server\Output\ValueObjectVisitor;
 use eZ\Publish\Core\REST\Server\Values\CachedValue;
@@ -146,7 +147,8 @@ class CachedValueTest extends ValueObjectVisitorBaseTest
     protected function internalGetVisitor()
     {
         $visitor = new ValueObjectVisitor\CachedValue(
-            $this->getConfigProviderMock()
+            $this->getConfigProviderMock(),
+            $this->getTtlResolverMock()
         );
         $requestStack = new RequestStack();
         if ($this->request) {
@@ -185,6 +187,19 @@ class CachedValueTest extends ValueObjectVisitorBaseTest
                     }
                 )
             );
+
+        return $mock;
+    }
+
+    protected function getTtlResolverMock()
+    {
+        $options = $this->options ?: $this->defaultOptions;
+
+        $mock = $this->getMock(TtlResolverInterface::class);
+        $mock
+            ->expects($this->any())
+            ->method('resolveTtl')
+            ->willReturn($options['content.default_ttl']);
 
         return $mock;
     }

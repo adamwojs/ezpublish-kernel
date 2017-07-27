@@ -9,6 +9,7 @@
 namespace eZ\Publish\Core\REST\Server\Output\ValueObjectVisitor;
 
 use eZ\Publish\Core\MVC\ConfigResolverInterface;
+use eZ\Publish\Core\MVC\Symfony\Cache\Content\TtlResolverInterface;
 use eZ\Publish\Core\MVC\Symfony\RequestStackAware;
 use eZ\Publish\Core\REST\Common\Output\ValueObjectVisitor;
 use eZ\Publish\Core\REST\Common\Output\Generator;
@@ -24,9 +25,13 @@ class CachedValue extends ValueObjectVisitor
     /** @var ConfigResolverInterface */
     protected $configResolver;
 
-    public function __construct(ConfigResolverInterface $configResolver)
+    /** @var TtlResolverInterface */
+    protected $ttlResolver;
+
+    public function __construct(ConfigResolverInterface $configResolver, TtlResolverInterface $ttlResolver)
     {
         $this->configResolver = $configResolver;
+        $this->ttlResolver = $ttlResolver;
     }
 
     /**
@@ -47,7 +52,7 @@ class CachedValue extends ValueObjectVisitor
         $response->setVary('Accept');
 
         if ($this->getParameter('content.ttl_cache') === true) {
-            $response->setSharedMaxAge($this->getParameter('content.default_ttl'));
+            $response->setSharedMaxAge($this->ttlResolver->resolveTtl($response));
             $request = $this->getCurrentRequest();
             if (isset($request) && $request->headers->has('X-User-Hash')) {
                 $response->setVary('X-User-Hash', false);

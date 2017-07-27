@@ -294,9 +294,9 @@ services:
     ezpublish.view.cache_response_listener:
         class: "%ezpublish.view.cache_response_listener.class%"
         arguments:
+            - "@ezpublish.http_cache.content.ttl_resolver"
             - $content.view_cache$
             - $content.ttl_cache$
-            - $content.default_ttl$
         tags:
             - { name: kernel.event_subscriber }
 

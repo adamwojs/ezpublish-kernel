@@ -4,6 +4,7 @@
  */
 namespace eZ\Bundle\EzPublishCoreBundle\EventListener;
 
+use eZ\Publish\Core\MVC\Symfony\Cache\Content\TtlResolverInterface;
 use eZ\Publish\API\Repository\Values\Content\Location;
 use eZ\Publish\Core\MVC\Symfony\View\CachableView;
 use eZ\Publish\Core\MVC\Symfony\View\LocationValueView;
@@ -18,6 +19,11 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class CacheViewResponseListener implements EventSubscriberInterface
 {
     /**
+     * @var eZ\Publish\Core\MVC\Symfony\Cache\Content\TtlResolverInterface
+     */
+    private $ttlResolver;
+
+    /**
      * True if view cache is enabled, false if it is not.
      *
      * @var bool
@@ -26,22 +32,16 @@ class CacheViewResponseListener implements EventSubscriberInterface
 
     /**
      * True if TTL cache is enabled, false if it is not.
+     *
      * @var bool
      */
     private $enableTtlCache;
 
-    /**
-     * Default ttl for ttl cache.
-     *
-     * @var int
-     */
-    private $defaultTtl;
-
-    public function __construct($enableViewCache, $enableTtlCache, $defaultTtl)
+    public function __construct(TtlResolverInterface $ttlResolver, $enableViewCache, $enableTtlCache)
     {
+        $this->ttlResolver = $ttlResolver;
         $this->enableViewCache = $enableViewCache;
         $this->enableTtlCache = $enableTtlCache;
-        $this->defaultTtl = $defaultTtl;
     }
 
     public static function getSubscribedEvents()
@@ -67,7 +67,7 @@ class CacheViewResponseListener implements EventSubscriberInterface
 
         $response->setPublic();
         if ($this->enableTtlCache && !$response->headers->hasCacheControlDirective('s-maxage')) {
-            $response->setSharedMaxAge($this->defaultTtl);
+            $response->setSharedMaxAge($this->ttlResolver->resolveTtl($response));
         }
     }
 }
