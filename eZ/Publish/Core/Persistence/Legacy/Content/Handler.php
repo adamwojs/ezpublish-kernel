@@ -11,6 +11,7 @@ namespace eZ\Publish\Core\Persistence\Legacy\Content;
 use eZ\Publish\Core\Persistence\Legacy\Content\Location\Gateway as LocationGateway;
 use eZ\Publish\SPI\Persistence\Content\Handler as BaseContentHandler;
 use eZ\Publish\SPI\Persistence\Content\Type\Handler as ContentTypeHandler;
+use eZ\Publish\SPI\Persistence\Content\Language\Handler as LanguageHandler;
 use eZ\Publish\Core\Persistence\Legacy\Content\UrlAlias\SlugConverter;
 use eZ\Publish\Core\Persistence\Legacy\Content\UrlAlias\Gateway as UrlAliasGateway;
 use eZ\Publish\SPI\Persistence\Content;
@@ -83,6 +84,13 @@ class Handler implements BaseContentHandler
     protected $treeHandler;
 
     /**
+     * Caching language handler.
+     *
+     * @var \eZ\Publish\SPI\Persistence\Content\Language\Handler
+     */
+    protected $languageHandler;
+
+    /**
      * Creates a new content handler.
      *
      * @param \eZ\Publish\Core\Persistence\Legacy\Content\Gateway $contentGateway
@@ -93,6 +101,7 @@ class Handler implements BaseContentHandler
      * @param \eZ\Publish\Core\Persistence\Legacy\Content\UrlAlias\Gateway $urlAliasGateway
      * @param \eZ\Publish\SPI\Persistence\Content\Type\Handler $contentTypeHandler
      * @param \eZ\Publish\Core\Persistence\Legacy\Content\TreeHandler $treeHandler
+     * @param \eZ\Publish\SPI\Persistence\Content\Language\Handler $languageHandler
      */
     public function __construct(
         Gateway $contentGateway,
@@ -102,7 +111,8 @@ class Handler implements BaseContentHandler
         SlugConverter $slugConverter,
         UrlAliasGateway $urlAliasGateway,
         ContentTypeHandler $contentTypeHandler,
-        TreeHandler $treeHandler
+        TreeHandler $treeHandler,
+        LanguageHandler $languageHandler
     ) {
         $this->contentGateway = $contentGateway;
         $this->locationGateway = $locationGateway;
@@ -112,6 +122,7 @@ class Handler implements BaseContentHandler
         $this->urlAliasGateway = $urlAliasGateway;
         $this->contentTypeHandler = $contentTypeHandler;
         $this->treeHandler = $treeHandler;
+        $this->languageHandler = $languageHandler;
     }
 
     /**
@@ -587,20 +598,29 @@ class Handler implements BaseContentHandler
      */
     public function copy($contentId, $versionNo = null)
     {
+        $contentInfo = $this->loadContentInfo($contentId);
+
         $currentVersionNo = isset($versionNo) ?
             $versionNo :
-            $this->loadContentInfo($contentId)->currentVersionNo;
+            $contentInfo->currentVersionNo;
 
         // Copy content in given version or current version
         $createStruct = $this->mapper->createCreateStructFromContent(
             $this->load($contentId, $currentVersionNo)
         );
+
+        if (!isset($versionNo) && $currentVersionNo > 1) {
+            $createStruct->initialLanguageId = $this
+                ->languageHandler
+                ->loadByLanguageCode($contentInfo->mainLanguageCode)
+                ->id;
+        }
+
         $content = $this->internalCreate($createStruct, $currentVersionNo);
 
         // If version was not passed also copy other versions
         if (!isset($versionNo)) {
             $contentType = $this->contentTypeHandler->load($createStruct->typeId);
-
             foreach ($this->listVersions($contentId) as $versionInfo) {
                 if ($versionInfo->versionNo === $currentVersionNo) {
                     continue;
@@ -628,7 +648,6 @@ class Handler implements BaseContentHandler
                     );
                 }
             }
-
             // Batch copy relations for all versions
             $this->contentGateway->copyRelations($contentId, $content->versionInfo->contentInfo->id);
         } else {
