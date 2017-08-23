@@ -729,69 +729,79 @@ class DoctrineDatabase extends Gateway
      */
     public function loadUrlAliasData(array $urlHashes)
     {
-        /** @var $query \eZ\Publish\Core\Persistence\Database\SelectQuery */
-        $query = $this->dbHandler->createSelectQuery();
+        $aliasData = null;
 
-        $count = count($urlHashes);
-        foreach ($urlHashes as $level => $urlPartHash) {
-            $tableName = $this->table . ($level === $count - 1 ? '' : $level);
+        foreach (array_chunk($urlHashes, 60) as $chunk) {
+            /** @var $query \eZ\Publish\Core\Persistence\Database\SelectQuery */
+            $query = $this->dbHandler->createSelectQuery();
 
-            if ($level === $count - 1) {
-                $query->select(
-                    $this->dbHandler->quoteColumn('id', $tableName),
-                    $this->dbHandler->quoteColumn('link', $tableName),
-                    $this->dbHandler->quoteColumn('is_alias', $tableName),
-                    $this->dbHandler->quoteColumn('alias_redirects', $tableName),
-                    $this->dbHandler->quoteColumn('is_original', $tableName),
-                    $this->dbHandler->quoteColumn('action', $tableName),
-                    $this->dbHandler->quoteColumn('action_type', $tableName),
-                    $this->dbHandler->quoteColumn('lang_mask', $tableName),
-                    $this->dbHandler->quoteColumn('text', $tableName),
-                    $this->dbHandler->quoteColumn('parent', $tableName),
-                    $this->dbHandler->quoteColumn('text_md5', $tableName)
-                )->from(
-                    $this->dbHandler->quoteTable($this->table)
+            $count = count($chunk);
+            $previousTableName = null;
+
+            foreach ($chunk as $level => $urlPartHash) {
+                $tableName = $this->table . ($level === $count - 1 ? '' : $level);
+
+                if ($level === $count - 1) {
+                    $query->select(
+                        $this->dbHandler->quoteColumn('id', $tableName),
+                        $this->dbHandler->quoteColumn('link', $tableName),
+                        $this->dbHandler->quoteColumn('is_alias', $tableName),
+                        $this->dbHandler->quoteColumn('alias_redirects', $tableName),
+                        $this->dbHandler->quoteColumn('is_original', $tableName),
+                        $this->dbHandler->quoteColumn('action', $tableName),
+                        $this->dbHandler->quoteColumn('action_type', $tableName),
+                        $this->dbHandler->quoteColumn('lang_mask', $tableName),
+                        $this->dbHandler->quoteColumn('text', $tableName),
+                        $this->dbHandler->quoteColumn('parent', $tableName),
+                        $this->dbHandler->quoteColumn('text_md5', $tableName)
+                    )->from(
+                        $this->dbHandler->quoteTable($this->table)
+                    );
+                } else {
+                    $query->select(
+                        $this->dbHandler->aliasedColumn($query, 'id', $tableName),
+                        $this->dbHandler->aliasedColumn($query, 'link', $tableName),
+                        $this->dbHandler->aliasedColumn($query, 'is_alias', $tableName),
+                        $this->dbHandler->aliasedColumn($query, 'alias_redirects', $tableName),
+                        $this->dbHandler->aliasedColumn($query, 'is_original', $tableName),
+                        $this->dbHandler->aliasedColumn($query, 'action', $tableName),
+                        $this->dbHandler->aliasedColumn($query, 'action_type', $tableName),
+                        $this->dbHandler->aliasedColumn($query, 'lang_mask', $tableName),
+                        $this->dbHandler->aliasedColumn($query, 'text', $tableName),
+                        $this->dbHandler->aliasedColumn($query, 'parent', $tableName),
+                        $this->dbHandler->aliasedColumn($query, 'text_md5', $tableName)
+                    )->from(
+                        $query->alias($this->table, $tableName)
+                    );
+                }
+
+                $query->where(
+                    $query->expr->lAnd(
+                        $query->expr->eq(
+                            $this->dbHandler->quoteColumn('text_md5', $tableName),
+                            $query->bindValue($urlPartHash, null, \PDO::PARAM_STR)
+                        ),
+                        $query->expr->eq(
+                            $this->dbHandler->quoteColumn('parent', $tableName),
+                            // root entry has parent column set to 0
+                            isset($previousTableName) ? $this->dbHandler->quoteColumn('link', $previousTableName)
+                                : $query->bindValue((isset($aliasData) ? $aliasData['link'] : 0), null, \PDO::PARAM_INT)
+                        )
+                    )
                 );
-            } else {
-                $query->select(
-                    $this->dbHandler->aliasedColumn($query, 'id', $tableName),
-                    $this->dbHandler->aliasedColumn($query, 'link', $tableName),
-                    $this->dbHandler->aliasedColumn($query, 'is_alias', $tableName),
-                    $this->dbHandler->aliasedColumn($query, 'alias_redirects', $tableName),
-                    $this->dbHandler->aliasedColumn($query, 'is_original', $tableName),
-                    $this->dbHandler->aliasedColumn($query, 'action', $tableName),
-                    $this->dbHandler->aliasedColumn($query, 'action_type', $tableName),
-                    $this->dbHandler->aliasedColumn($query, 'lang_mask', $tableName),
-                    $this->dbHandler->aliasedColumn($query, 'text', $tableName),
-                    $this->dbHandler->aliasedColumn($query, 'parent', $tableName),
-                    $this->dbHandler->aliasedColumn($query, 'text_md5', $tableName)
-                )->from(
-                    $query->alias($this->table, $tableName)
-                );
+
+                $previousTableName = $tableName;
             }
 
-            $query->where(
-                $query->expr->lAnd(
-                    $query->expr->eq(
-                        $this->dbHandler->quoteColumn('text_md5', $tableName),
-                        $query->bindValue($urlPartHash, null, \PDO::PARAM_STR)
-                    ),
-                    $query->expr->eq(
-                        $this->dbHandler->quoteColumn('parent', $tableName),
-                        // root entry has parent column set to 0
-                        isset($previousTableName) ? $this->dbHandler->quoteColumn('link', $previousTableName) : $query->bindValue(0, null, \PDO::PARAM_INT)
-                    )
-                )
-            );
+            $query->limit(1);
 
-            $previousTableName = $tableName;
+            $statement = $query->prepare();
+            $statement->execute();
+
+            $aliasData = $statement->fetch(\PDO::FETCH_ASSOC);
         }
-        $query->limit(1);
 
-        $statement = $query->prepare();
-        $statement->execute();
-
-        return $statement->fetch(\PDO::FETCH_ASSOC);
+        return $aliasData;
     }
 
     /**
