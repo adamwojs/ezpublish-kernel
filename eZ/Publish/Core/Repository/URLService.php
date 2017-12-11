@@ -4,7 +4,7 @@ namespace eZ\Publish\Core\Repository;
 
 use DateTime;
 use eZ\Publish\API\Repository\Exceptions\NotFoundException;
-use eZ\Publish\API\Repository\Repository;
+use eZ\Publish\API\Repository\Repository as RepositoryInterface;
 use eZ\Publish\API\Repository\URLService as URLServiceInterface;
 use eZ\Publish\API\Repository\Values\Content\Query;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion as ContentCriterion;
@@ -37,7 +37,7 @@ class URLService implements URLServiceInterface
      * @param \eZ\Publish\API\Repository\Repository $repository
      * @param \eZ\Publish\SPI\Persistence\URL\Handler $urlHandler
      */
-    public function __construct(Repository $repository, URLHandler $urlHandler)
+    public function __construct(RepositoryInterface $repository, URLHandler $urlHandler)
     {
         $this->repository = $repository;
         $this->urlHandler = $urlHandler;
