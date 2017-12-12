@@ -174,7 +174,6 @@ class URLService implements URLServiceInterface
         return new URL([
             'id' => $data->id,
             'url' => $data->url,
-            'originalUrlMd5' => $data->originalUrlMd5,
             'isValid' => $data->isValid,
             'lastChecked' => $this->createDateTime($data->lastChecked),
             'created' => $this->createDateTime($data->created),
