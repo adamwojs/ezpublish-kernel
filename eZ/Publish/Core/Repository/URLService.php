@@ -12,6 +12,7 @@ use eZ\Publish\API\Repository\Values\URL\SearchResult;
 use eZ\Publish\API\Repository\Values\URL\URL;
 use eZ\Publish\API\Repository\Values\URL\URLQuery;
 use eZ\Publish\API\Repository\Values\URL\URLUpdateStruct;
+use eZ\Publish\API\Repository\Values\URL\UsageSearchResult;
 use eZ\Publish\Core\Base\Exceptions\InvalidArgumentException;
 use eZ\Publish\Core\Base\Exceptions\InvalidArgumentValue;
 use eZ\Publish\Core\Base\Exceptions\UnauthorizedException;
@@ -141,24 +142,31 @@ class URLService implements URLServiceInterface
      */
     public function findUsages(URL $url, $offset = 0, $limit = -1)
     {
-        $usages = $this->urlHandler->findUsages($url->id);
+        $contentIds = $this->urlHandler->findUsages($url->id);
+        if (empty($contentIds)) {
+            return new UsageSearchResult();
+        }
 
         $query = new Query();
-        if (!empty($usages)) {
-            $query->filter = new ContentCriterion\LogicalAnd([
-                new ContentCriterion\ContentId($usages),
-                new ContentCriterion\Visibility(ContentCriterion\Visibility::VISIBLE),
-            ]);
-        } else {
-            $query->filter = new ContentCriterion\MatchNone();
-        }
+        $query->filter = new ContentCriterion\LogicalAnd([
+            new ContentCriterion\ContentId($contentIds),
+            new ContentCriterion\Visibility(ContentCriterion\Visibility::VISIBLE),
+        ]);
 
         $query->offset = $offset;
         if ($limit > -1) {
             $query->limit = $limit;
         }
 
-        return $this->repository->getSearchService()->findContentInfo($query);
+        $searchResults = $this->repository->getSearchService()->findContentInfo($query);
+
+        $usageResults = new UsageSearchResult();
+        $usageResults->totalCount = $searchResults->totalCount;
+        foreach($searchResults->searchHits as $hit) {
+            $usageResults->items[] = $hit->valueObject;
+        }
+
+        return $usageResults;
     }
 
     protected function buildDomainObject(SPIUrl $data)
