@@ -11,7 +11,7 @@ use eZ\Publish\API\Repository\Values\ValueObject;
 class URLUpdateStruct extends ValueObject
 {
     /**
-     * URL itself e.g. "http://ez.no"
+     * URL itself e.g. "http://ez.no".
      *
      * @var string|null
      */
@@ -25,7 +25,7 @@ class URLUpdateStruct extends ValueObject
     public $isValid;
 
     /**
-     * Modified date
+     * Modified date.
      *
      * @var \DateTimeInterface|null
      */

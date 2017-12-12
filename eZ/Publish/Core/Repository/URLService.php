@@ -162,7 +162,7 @@ class URLService implements URLServiceInterface
 
         $usageResults = new UsageSearchResult();
         $usageResults->totalCount = $searchResults->totalCount;
-        foreach($searchResults->searchHits as $hit) {
+        foreach ($searchResults->searchHits as $hit) {
             $usageResults->items[] = $hit->valueObject;
         }
 

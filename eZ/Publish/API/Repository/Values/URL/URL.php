@@ -14,7 +14,7 @@ class URL extends ValueObject
     protected $id;
 
     /**
-     * URL itself e.g. "http://ez.no"
+     * URL itself e.g. "http://ez.no".
      *
      * @var string
      */
@@ -28,21 +28,21 @@ class URL extends ValueObject
     protected $isValid;
 
     /**
-     * Date of last check
+     * Date of last check.
      *
      * @var \DateTimeInterface
      */
     protected $lastChecked;
 
     /**
-     * Creation date
+     * Creation date.
      *
      * @var \DateTimeInterface
      */
     protected $created;
 
     /**
-     * Modified date
+     * Modified date.
      *
      * @var \DateTimeInterface
      */

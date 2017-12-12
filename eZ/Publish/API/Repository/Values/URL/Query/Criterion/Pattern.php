@@ -8,7 +8,7 @@ namespace eZ\Publish\API\Repository\Values\URL\Query\Criterion;
 class Pattern extends Matcher
 {
     /**
-     * String which needs to part of URL e.g. ez.no
+     * String which needs to part of URL e.g. ez.no.
      *
      * @var string
      */
@@ -21,8 +21,8 @@ class Pattern extends Matcher
      */
     public function __construct($pattern)
     {
-        if ($pattern === null || $pattern === "") {
-            throw new \InvalidArgumentException("URL pattern should not be empty!");
+        if ($pattern === null || $pattern === '') {
+            throw new \InvalidArgumentException('URL pattern should not be empty!');
         }
 
         $this->pattern = $pattern;
