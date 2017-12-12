@@ -17,11 +17,6 @@ class URL extends ValueObject
     protected $url;
 
     /**
-     * @var string
-     */
-    protected $originalUrlMd5;
-
-    /**
      * @var bool
      */
     protected $isValid;
