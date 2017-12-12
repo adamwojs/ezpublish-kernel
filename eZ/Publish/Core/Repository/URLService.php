@@ -69,7 +69,7 @@ class URLService implements URLServiceInterface
         }
 
         return new SearchResult([
-            'count' => $results['count'],
+            'totalCount' => $results['count'],
             'items' => $items,
         ]);
     }
