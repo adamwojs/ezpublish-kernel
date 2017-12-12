@@ -169,6 +169,12 @@ class URLService implements URLServiceInterface
         return $usageResults;
     }
 
+    /**
+     * Builds domain object from ValueObject returned by Persistence API.
+     *
+     * @param \eZ\Publish\SPI\Persistence\URL\URL $data
+     * @return \eZ\Publish\API\Repository\Values\URL\URL
+     */
     protected function buildDomainObject(SPIUrl $data)
     {
         return new URL([
@@ -181,6 +187,13 @@ class URLService implements URLServiceInterface
         ]);
     }
 
+    /**
+     * Builds SPI update structure used by Persistence API.
+     *
+     * @param \eZ\Publish\API\Repository\Values\URL\URL $url
+     * @param \eZ\Publish\API\Repository\Values\URL\URLUpdateStruct $data
+     * @return \eZ\Publish\SPI\Persistence\URL\URLUpdateStruct
+     */
     protected function buildUpdateStruct(URL $url, URLUpdateStruct $data)
     {
         $updateStruct = new SPIUrlUpdateStruct();
