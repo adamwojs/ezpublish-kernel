@@ -2,36 +2,17 @@
 
 namespace eZ\Bundle\EzPublishCoreBundle\URLChecker\Handler;
 
-use eZ\Bundle\EzPublishCoreBundle\URLChecker\URLHandlerInterface;
 use eZ\Publish\API\Repository\Values\URL\URL;
-use Psr\Log\LoggerAwareTrait;
-use Psr\Log\NullLogger;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class HTTPHandler implements URLHandlerInterface
+class HTTPHandler extends AbstractURLHandler
 {
-    use LoggerAwareTrait;
-
-    /**
-     * @var array
-     */
-    private $options;
-
-    /**
-     * HttpHandler constructor.
-     */
-    public function __construct()
-    {
-        $this->options = $this->getOptionsResolver()->resolve();
-        $this->logger = new NullLogger();
-    }
-
     /**
      * {@inheritdoc}
      *
      * Based on https://www.onlineaspect.com/2009/01/26/how-to-use-curl_multi-without-blocking/
      */
-    public function validate(array $urls, callable $doUpdateStatus)
+    public function validate(array $urls)
     {
         if (!$this->options['enabled']) {
             return;
@@ -56,7 +37,7 @@ class HTTPHandler implements URLHandlerInterface
             while ($done = curl_multi_info_read($master)) {
                 $handler = $done['handle'];
 
-                $this->doValidate($handlers[(int)$handler], $doUpdateStatus, $handler);
+                $this->doValidate($handlers[(int)$handler], $handler);
 
                 if ($i < count($urls)) {
                     curl_multi_add_handle($master, $this->createCurlHandlerForUrl($urls[$i], $handlers));
@@ -73,20 +54,6 @@ class HTTPHandler implements URLHandlerInterface
 
     /**
      * {@inheritdoc}
-     */
-    public function setOptions(array $options = null)
-    {
-        if ($options === null) {
-            $options = [];
-        }
-
-        $this->options = $this->getOptionsResolver()->resolve($options);
-    }
-
-    /**
-     * Returns options resolver.
-     *
-     * @return OptionsResolver
      */
     protected function getOptionsResolver()
     {
@@ -145,12 +112,11 @@ class HTTPHandler implements URLHandlerInterface
      * Validate single response.
      *
      * @param URL $url
-     * @param callable $doUpdateStatus
      * @param resource $handler CURL handler
      */
-    private function doValidate(URL $url, callable $doUpdateStatus, $handler)
+    private function doValidate(URL $url, $handler)
     {
-        $doUpdateStatus($url, $this->isSuccessful(curl_getinfo($handler, CURLINFO_HTTP_CODE)));
+        $this->setUrlStatus($url, $this->isSuccessful(curl_getinfo($handler, CURLINFO_HTTP_CODE)));
     }
 
     private function isSuccessful($statusCode)

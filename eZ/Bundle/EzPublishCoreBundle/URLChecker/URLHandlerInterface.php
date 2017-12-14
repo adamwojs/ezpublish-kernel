@@ -8,9 +8,8 @@ interface URLHandlerInterface
      * Validates given list of URLs.
      *
      * @param \eZ\Publish\API\Repository\Values\URL\URL[] $urls
-     * @param callable $doUpdateStatus Callable executed to update URL status
      */
-    public function validate(array $urls, callable $doUpdateStatus);
+    public function validate(array $urls);
 
     /**
      * Set handler options.
