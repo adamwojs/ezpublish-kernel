@@ -1,11 +1,13 @@
 <?php
 
+/**
+ * @copyright Copyright (C) eZ Systems AS. All rights reserved.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
+ */
 namespace eZ\Bundle\EzPublishCoreBundle\URLChecker;
 
-use DateTime;
 use eZ\Publish\API\Repository\URLService as URLServiceInterface;
 use eZ\Publish\API\Repository\Values\URL\SearchResult;
-use eZ\Publish\API\Repository\Values\URL\URL;
 use eZ\Publish\API\Repository\Values\URL\URLQuery;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
