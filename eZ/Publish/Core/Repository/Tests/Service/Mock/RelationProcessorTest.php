@@ -279,7 +279,7 @@ class RelationProcessorTest extends BaseServiceMockTest
                     [
                         Relation::LINK => [
                             'locationIds' => [$locationId],
-                        ]
+                        ],
                     ]
                 )
             );
@@ -298,7 +298,6 @@ class RelationProcessorTest extends BaseServiceMockTest
             ->with('Invalid relation: destination location not found', [
                 'locationId' => $locationId,
             ]);
-
 
         $relations = [];
         $locationIdToContentIdMapping = [];

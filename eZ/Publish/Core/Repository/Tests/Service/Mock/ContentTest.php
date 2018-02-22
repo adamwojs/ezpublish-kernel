@@ -5111,7 +5111,6 @@ class ContentTest extends BaseServiceMockTest
             ->method('validate')
             ->willReturnArgument(1);
 
-
         $this->getFieldTypeRegistryMock()->expects($this->any())
             ->method('getFieldType')
             ->will($this->returnValue($fieldTypeMock));
