@@ -22,7 +22,7 @@ class ValidationErrorOccurs extends \PHPUnit_Framework_Constraint
     private $expectedValidationErrorMessage;
 
     /**
-     * @param $expectedValidationErrorMessage
+     * @param string $expectedValidationErrorMessage
      */
     public function __construct($expectedValidationErrorMessage)
     {
@@ -60,7 +60,7 @@ class ValidationErrorOccurs extends \PHPUnit_Framework_Constraint
     protected function failureDescription($other)
     {
         return sprintf(
-            '%s::::getFieldErrors = %s %s',
+            '%s::getFieldErrors = %s %s',
             get_class($other),
             var_export($other->getFieldErrors(), true),
             $this->toString()
