@@ -168,6 +168,6 @@ services:
     ezpublish.repository.relation_processor:
         class: eZ\Publish\Core\Repository\Helper\RelationProcessor
         arguments:
-            - "@ezpublish.api.persistence_handler"
+            - '@ezpublish.api.persistence_handler'
         calls:
-            - ["setLogger", ["@?logger"]]
+            - ['setLogger', ['@?logger']]

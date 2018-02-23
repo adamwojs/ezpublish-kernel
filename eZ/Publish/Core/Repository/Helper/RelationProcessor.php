@@ -85,6 +85,7 @@ class RelationProcessor
                             $relations[$relationType][$locationIdToContentIdMapping[$locationId]] = true;
                         } catch (NotFoundException $e) {
                             $this->logger->error('Invalid relation: destination location not found', [
+                                'fieldDefinitionId' => $fieldDefinitionId,
                                 'locationId' => $locationId,
                             ]);
                         }

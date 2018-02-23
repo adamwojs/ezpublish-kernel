@@ -269,6 +269,7 @@ class RelationProcessorTest extends BaseServiceMockTest
         $fieldTypeMock = $this->getMock(FieldType::class);
 
         $locationId = 123465;
+        $fieldDefinitionId = 42;
 
         $fieldTypeMock
             ->expects($this->once())
@@ -296,6 +297,7 @@ class RelationProcessorTest extends BaseServiceMockTest
             ->expects($this->once())
             ->method('error')
             ->with('Invalid relation: destination location not found', [
+                'fieldDefinitionId' => $fieldDefinitionId,
                 'locationId' => $locationId,
             ]);
 
@@ -309,7 +311,7 @@ class RelationProcessorTest extends BaseServiceMockTest
             $locationIdToContentIdMapping,
             $fieldTypeMock,
             $fieldValueMock,
-            42
+            $fieldDefinitionId
         );
     }
 

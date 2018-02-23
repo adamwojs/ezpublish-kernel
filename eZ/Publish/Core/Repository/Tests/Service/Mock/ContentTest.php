@@ -5187,7 +5187,8 @@ class ContentTest extends BaseServiceMockTest
         ];
 
         $data = $this->providerForTestUpdateContentNonRedundantFieldSetComplex();
-        for ($i = 0; $i < count($data); ++$i) {
+        $count = count($data);
+        for ($i = 0; $i < $count; ++$i) {
             $data[$i][] = $allFieldErrors[$i];
         }
 
