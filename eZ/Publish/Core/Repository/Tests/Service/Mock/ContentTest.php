@@ -5002,7 +5002,6 @@ class ContentTest extends BaseServiceMockTest
         /** @var \PHPUnit_Framework_MockObject_MockObject $languageHandlerMock */
         $languageHandlerMock = $this->getPersistenceMock()->contentLanguageHandler();
         $contentTypeServiceMock = $this->getContentTypeServiceMock();
-        $fieldTypeServiceMock = $this->getFieldTypeServiceMock();
         $fieldTypeMock = $this->getMock('eZ\\Publish\\SPI\\FieldType\\FieldType');
         $existingLanguageCodes = array_map(
             function (Field $field) {
@@ -5083,7 +5082,6 @@ class ContentTest extends BaseServiceMockTest
             $languageCodes
         );
         $allFieldErrors = array();
-        $validateCount = 0;
         $emptyValue = self::EMPTY_FIELD_VALUE;
 
         $fieldTypeMock->expects($this->exactly(count($fieldValues) * count($languageCodes)))
@@ -5133,16 +5131,15 @@ class ContentTest extends BaseServiceMockTest
                     'eng-GB' => 'newValue1-eng-GB',
                     'eng-US' => 'newValue1-eng-GB',
                 ],
-                'fieldDefinitionId4' => [
-                    'eng-US' => 'newValue4',
+                'fieldDefinitionId2' => [
+                    'eng-GB' => 'initialValue2'
                 ],
-            ],
-            [
-                'fieldDefinitionId1' => [
-                    'eng-GB' => 'newValue1-eng-GB',
-                    'eng-US' => 'newValue1-eng-GB',
+                'fieldDefinitionId3' => [
+                    'eng-GB' => 'initialValue3',
+                    'eng-US' => 'initialValue3',
                 ],
                 'fieldDefinitionId4' => [
+                    'eng-GB' => 'initialValue4',
                     'eng-US' => 'newValue4',
                 ],
             ],
@@ -5152,7 +5149,15 @@ class ContentTest extends BaseServiceMockTest
                     'eng-US' => 'newValue1-eng-GB',
                 ],
                 'fieldDefinitionId2' => [
-                    'eng-US' => 'newValue2',
+                    'eng-GB' => 'initialValue2'
+                ],
+                'fieldDefinitionId3' => [
+                    'eng-GB' => 'initialValue3',
+                    'eng-US' => 'initialValue3',
+                ],
+                'fieldDefinitionId4' => [
+                    'eng-GB' => 'initialValue4',
+                    'eng-US' => 'newValue4',
                 ],
             ],
             [
@@ -5161,7 +5166,37 @@ class ContentTest extends BaseServiceMockTest
                     'eng-US' => 'newValue1-eng-GB',
                 ],
                 'fieldDefinitionId2' => [
+                    'eng-GB' => 'initialValue2',
                     'eng-US' => 'newValue2',
+                ],
+                'fieldDefinitionId3' => [
+                    'eng-GB' => 'initialValue3',
+                    'eng-US' => 'initialValue3',
+                ],
+                'fieldDefinitionId4' => [
+                    'eng-GB' => 'initialValue4',
+                    'eng-US' => 'defaultValue4',
+                ],
+            ],
+            [
+                'fieldDefinitionId1' => [
+                    'eng-GB' => 'newValue1-eng-GB',
+                    'ger-DE' => 'newValue1-eng-GB',
+                    'eng-US' => 'newValue1-eng-GB',
+                ],
+                'fieldDefinitionId2' => [
+                    'eng-US' => 'initialValue2',
+                    'eng-US' => 'newValue2',
+                ],
+                'fieldDefinitionId3' => [
+                    'eng-GB' => 'initialValue3',
+                    'eng-US' => 'initialValue3',
+                    'ger-DE' => 'initialValue3',
+                ],
+                'fieldDefinitionId4' => [
+                    'eng-GB' => 'initialValue4',
+                    'eng-US' => 'defaultValue4',
+                    'ger-DE' => 'defaultValue4',
                 ],
             ],
             [
@@ -5171,17 +5206,35 @@ class ContentTest extends BaseServiceMockTest
                     'ger-DE' => 'newValue1-eng-GB',
                 ],
                 'fieldDefinitionId2' => [
+                    'eng-US' => 'initialValue2',
                     'eng-US' => 'newValue2',
+                ],
+                'fieldDefinitionId3' => [
+                    'eng-GB' => 'initialValue3',
+                    'eng-US' => 'initialValue3',
+                    'ger-DE' => 'initialValue3',
+                ],
+                'fieldDefinitionId4' => [
+                    'eng-GB' => 'defaultValue4',
+                    'eng-US' => 'defaultValue4',
+                    'ger-DE' => 'defaultValue4',
                 ],
             ],
             [
                 'fieldDefinitionId1' => [
-                    'eng-GB' => 'newValue1-eng-GB',
                     'eng-US' => 'newValue1-eng-GB',
                     'ger-DE' => 'newValue1-eng-GB',
                 ],
                 'fieldDefinitionId2' => [
                     'eng-US' => 'newValue2',
+                ],
+                'fieldDefinitionId3' => [
+                    'ger-DE' => 'initialValue3',
+                    'eng-US' => 'initialValue3',
+                ],
+                'fieldDefinitionId4' => [
+                    'ger-DE' => 'defaultValue4',
+                    'eng-US' => 'defaultValue4',
                 ],
             ],
         ];
