@@ -115,8 +115,15 @@ services:
         arguments:
             - '@liip_imagine'
 
+#    ezpublish.image_alias.imagine.placeholder_provider.remote_origin:
+#        class: 'eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider\RemoteProvider'
+#        arguments:
+#            - 'http://127.0.0.1:8002/var/site/storage/%%id%%'
+#
 #    ezpublish.image_alias.imagine.placeholder_provider.placekitten:
-#        class: 'eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider\PlacekittenProvider'
+#        class: 'eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider\RemoteProvider'
+#        arguments:
+#            - 'http://placekitten.com/%%width%%/%%height%%'
 
     ezpublish.image_alias.imagine.filter.loader.scaledown.base:
         abstract: true
