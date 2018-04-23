@@ -12,7 +12,7 @@ use eZ\Publish\Core\FieldType\Image\Value as ImageValue;
 interface PlaceholderProvider
 {
     /**
-     * Provides replace for specified image.
+     * Provides a placeholder image path for a given Image FieldType value.
      *
      * @param \eZ\Publish\Core\FieldType\Image\Value $value
      * @return string Path to placeholder
