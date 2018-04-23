@@ -5,6 +5,7 @@ parameters:
     ezpublish.image_alias.imagine.cache_resolver.class: eZ\Bundle\EzPublishCoreBundle\Imagine\IORepositoryResolver
     ezpublish.image_alias.imagine.alias_generator.class: eZ\Bundle\EzPublishCoreBundle\Imagine\AliasGenerator
     ezpublish.image_alias.imagine.alias_cleaner.class: eZ\Bundle\EzPublishCoreBundle\Imagine\AliasCleaner
+    ezpublish.image_alias.imagine.placeholder_generator.class: eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderGenerator
 
     ezpublish.image_alias.imagine.filter.loader.scaledownonly.width_height.class: eZ\Bundle\EzPublishCoreBundle\Imagine\Filter\Loader\ScaleDownOnlyFilterLoader
     ezpublish.image_alias.imagine.filter.loader.scaledownonly.width.class: eZ\Bundle\EzPublishCoreBundle\Imagine\Filter\Loader\ScaleWidthDownOnlyFilterLoader
@@ -82,6 +83,9 @@ services:
             - { name: liip_imagine.cache.resolver, resolver: ezpublish }
 
     ezpublish.image_alias.imagine.alias_generator:
+        alias: ezpublish.image_alias.imagine.alias_generator.placeholder
+
+    ezpublish.image_alias.imagine.alias_generator.inner:
         class: "%ezpublish.image_alias.imagine.alias_generator.class%"
         arguments:
             - "@ezpublish.image_alias.imagine.binary_loader"
@@ -90,10 +94,29 @@ services:
             - "@liip_imagine.filter.configuration"
             - "@?logger"
 
+    ezpublish.image_alias.imagine.alias_generator.placeholder:
+        class: 'eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderAliasGenerator'
+        arguments:
+            - '@ezpublish.image_alias.imagine.alias_generator.inner'
+            - '@ezpublish.image_alias.imagine.placeholder_provider'
+            - '@ezpublish.image_alias.imagine.cache_resolver'
+            - '@ezpublish.fieldType.ezimage.io_service'
+
     ezpublish.image_alias.imagine.alias_cleaner:
         class: "%ezpublish.image_alias.imagine.alias_cleaner.class%"
         arguments: ["@ezpublish.image_alias.imagine.cache_resolver"]
         lazy: true
+
+    ezpublish.image_alias.imagine.placeholder_provider:
+        alias: ezpublish.image_alias.imagine.placeholder_provider.generic
+
+    ezpublish.image_alias.imagine.placeholder_provider.generic:
+        class: 'eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider\GenericProvider'
+        arguments:
+            - '@liip_imagine'
+
+#    ezpublish.image_alias.imagine.placeholder_provider.placekitten:
+#        class: 'eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider\PlacekittenProvider'
 
     ezpublish.image_alias.imagine.filter.loader.scaledown.base:
         abstract: true
