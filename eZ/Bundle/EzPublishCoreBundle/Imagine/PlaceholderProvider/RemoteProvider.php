@@ -54,7 +54,7 @@ class RemoteProvider implements PlaceholderProvider
                 CURLOPT_URL => $placeholderUrl,
                 CURLOPT_FILE => fopen($path, 'wb'),
                 CURLOPT_TIMEOUT => $this->timeout,
-                CURLOPT_FAILONERROR => true
+                CURLOPT_FAILONERROR => true,
             ]);
 
             if (curl_exec($handler) === false) {
@@ -72,7 +72,7 @@ class RemoteProvider implements PlaceholderProvider
         return strtr($this->urlPattern, [
             '%id%' => $value->id,
             '%width%' => $value->width,
-            '%height%' => $value->height
+            '%height%' => $value->height,
         ]);
     }
 
