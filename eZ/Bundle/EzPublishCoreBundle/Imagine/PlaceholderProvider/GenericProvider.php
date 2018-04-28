@@ -10,7 +10,7 @@ namespace eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider;
 
 use eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider;
 use eZ\Publish\Core\FieldType\Image\Value as ImageValue;
-use Imagine as Imagine;
+use Imagine\Image as Image;
 use Imagine\Image\ImagineInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -40,51 +40,57 @@ class GenericProvider implements PlaceholderProvider
 
     public function getPlaceholder(ImageValue $value): string
     {
-        $palette = new Imagine\Image\Palette\RGB();
+        $palette = new Image\Palette\RGB();
         $background = $palette->color($this->options['background']);
         $foreground = $palette->color($this->options['foreground']);
         $secondary = $palette->color($this->options['secondary']);
 
-        $size = new Imagine\Image\Box($value->width, $value->height);
-        $font = new Imagine\Gd\Font($this->options['fontpath'], $this->options['fontsize'], $foreground);
+        $size = new Image\Box($value->width, $value->height);
+        $font = $this->imagine->font($this->options['fontpath'], $this->options['fontsize'], $foreground);
+        $text = $this->getPlaceholderText($value);
 
-        $text = strtr($this->options['text'], [
-            '%width%' => $value->width,
-            '%height%' => $value->height,
-            '%id%' => $value->id,
-        ]);
-
-        $center = new Imagine\Image\Point\Center($size);
+        $center = new Image\Point\Center($size);
         $textbox = $font->box($text);
-        $textpos = new Imagine\Image\Point(
+        $textpos = new Image\Point(
             max($center->getX() - ($textbox->getWidth() / 2), 0),
             max($center->getY() - ($textbox->getHeight() / 2), 0)
         );
 
         $image = $this->imagine->create($size, $background);
         $image->draw()->line(
-            new Imagine\Image\Point(0, 0),
-            new Imagine\Image\Point($value->width, $value->height),
+            new Image\Point(0, 0),
+            new Image\Point($value->width, $value->height),
             $secondary
         );
 
         $image->draw()->line(
-            new Imagine\Image\Point($value->width, 0),
-            new Imagine\Image\Point(0, $value->height),
+            new Image\Point($value->width, 0),
+            new Image\Point(0, $value->height),
             $secondary
         );
 
         $image->draw()->text($text, $font, $textpos, 0, $value->width);
 
-        $path = $this->getTemporaryPath($value);
-        $image->save($path);
+        $path = $this->getTemporaryPath();
+        $image->save($path, [
+            'format' => pathinfo($value->id, PATHINFO_EXTENSION)
+        ]);
 
         return $path;
     }
 
-    private function getTemporaryPath(ImageValue $value): string
+    private function getPlaceholderText(ImageValue $value): string
     {
-        return tempnam(sys_get_temp_dir(), 'placeholder') . '.' . pathinfo($value->id, PATHINFO_EXTENSION);
+        return strtr($this->options['text'], [
+            '%width%' => $value->width,
+            '%height%' => $value->height,
+            '%id%' => $value->id,
+        ]);
+    }
+
+    private function getTemporaryPath(): string
+    {
+        return stream_get_meta_data(tmpfile())['uri'];
     }
 
     private function resolveOptions(array $options): array
@@ -95,7 +101,7 @@ class GenericProvider implements PlaceholderProvider
             'foreground' => '#000000',
             'secondary' => '#CCCCCC',
             'fontsize' => 20,
-            'text' => 'IMAGE PLACEHOLDER %width%x%height% (%id%)',
+            'text' => "IMAGE PLACEHOLDER %width%x%height%\n(%id%)",
             // (!) Default font is not part of this PR
             'fontpath' => __DIR__ . '/../../Resources/font/font.ttf',
         ]);
