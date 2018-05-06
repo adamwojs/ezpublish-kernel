@@ -475,6 +475,9 @@ class EzPublishCoreExtension extends Extension
     private function handleImage(array $config, ContainerBuilder $container, FileLoader $loader)
     {
         $loader->load('image.yml');
+
+        $container->setParameter('ezpublish.image_placeholder.provider', $config['image_placeholder']['provider']);
+        $container->setParameter('ezpublish.image_placeholder.config', $config['image_placeholder']['config']);
     }
 
     private function handleUrlChecker($config, ContainerBuilder $container, FileLoader $loader)

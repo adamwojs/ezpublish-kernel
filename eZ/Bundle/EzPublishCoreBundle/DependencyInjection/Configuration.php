@@ -62,6 +62,7 @@ class Configuration extends SiteAccessConfiguration
         $this->addPageSection($rootNode);
         $this->addRouterSection($rootNode);
         $this->addRichTextSection($rootNode);
+        $this->addImagePlaceholderSection($rootNode);
 
         // Delegate SiteAccess config to configuration parsers
         $this->mainConfigParser->addSemanticConfig($this->generateScopeBaseNode($rootNode));
@@ -567,5 +568,22 @@ EOT;
                 ->end()
             ->end()
         ;
+    }
+
+    private function addImagePlaceholderSection(ArrayNodeDefinition $rootNode)
+    {
+        $rootNode
+            ->children()
+                ->arrayNode('image_placeholder')
+                    ->info('Configuration for strategy of replacing missing images')
+                    ->children()
+                        // generic / remote / null
+                        ->scalarNode('provider')
+                            ->defaultNull()
+                        ->end()
+                        ->variableNode('config')->defaultValue([])->end()
+                    ->end()
+                ->end()
+            ->end();
     }
 }

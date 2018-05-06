@@ -79,6 +79,11 @@ class GenericProvider implements PlaceholderProvider
         return $path;
     }
 
+    public function setOptions(array $options)
+    {
+        $this->options = $this->resolveOptions($options);
+    }
+
     private function getPlaceholderText(ImageValue $value): string
     {
         return strtr($this->options['text'], [

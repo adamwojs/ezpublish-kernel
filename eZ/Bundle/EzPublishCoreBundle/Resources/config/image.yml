@@ -82,10 +82,10 @@ services:
         tags:
             - { name: liip_imagine.cache.resolver, resolver: ezpublish }
 
-    ezpublish.image_alias.imagine.alias_generator:
-        alias: ezpublish.image_alias.imagine.alias_generator.placeholder
+#    ezpublish.image_alias.imagine.alias_generator:
+#        alias: ezpublish.image_alias.imagine.alias_generator.inner
 
-    ezpublish.image_alias.imagine.alias_generator.inner:
+    ezpublish.image_alias.imagine.alias_generator:
         class: "%ezpublish.image_alias.imagine.alias_generator.class%"
         arguments:
             - "@ezpublish.image_alias.imagine.binary_loader"
@@ -96,24 +96,29 @@ services:
 
     ezpublish.image_alias.imagine.alias_generator.placeholder:
         class: 'eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderAliasGenerator'
+        decorates: ezpublish.image_alias.imagine.alias_generator
         arguments:
-            - '@ezpublish.image_alias.imagine.alias_generator.inner'
-            - '@ezpublish.image_alias.imagine.placeholder_provider'
+            - '@ezpublish.image_alias.imagine.alias_generator.placeholder.inner'
+            # Dynamiclly defined by ImagePlaceholderProviderPass
+            - '@?ezpublish.image_alias.imagine.placeholder_provider'
             - '@ezpublish.image_alias.imagine.cache_resolver'
             - '@ezpublish.fieldType.ezimage.io_service'
+        public: false
 
     ezpublish.image_alias.imagine.alias_cleaner:
         class: "%ezpublish.image_alias.imagine.alias_cleaner.class%"
         arguments: ["@ezpublish.image_alias.imagine.cache_resolver"]
         lazy: true
 
-    ezpublish.image_alias.imagine.placeholder_provider:
-        alias: ezpublish.image_alias.imagine.placeholder_provider.generic
-
-    ezpublish.image_alias.imagine.placeholder_provider.generic:
+    ezpublish.image_alias.imagine.placeholder_provider.generic.base:
         class: 'eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider\GenericProvider'
+        abstract: true
         arguments:
             - '@liip_imagine'
+
+    ezpublish.image_alias.imagine.placeholder_provider.remote.base:
+        class: 'eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider\RemoteProvider'
+        abstract: true
 
     ezpublish.image_alias.imagine.filter.loader.scaledown.base:
         abstract: true

@@ -11,6 +11,7 @@ namespace eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider;
 use eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider;
 use eZ\Publish\Core\FieldType\Image\Value as ImageValue;
 use RuntimeException;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Remote placeholder provider e.g. http://placekitten.com.
@@ -26,6 +27,11 @@ class RemoteProvider implements PlaceholderProvider
      * @var int
      */
     private $timeout;
+
+    /**
+     * @var array
+     */
+    private $options;
 
     /**
      * RemoteProvider constructor.
@@ -67,6 +73,11 @@ class RemoteProvider implements PlaceholderProvider
         return $path;
     }
 
+    public function setOptions(array $options)
+    {
+        $this->options = $this->resolveOptions($options);
+    }
+
     private function getPlaceholderUrl(ImageValue $value): string
     {
         return strtr($this->urlPattern, [
@@ -79,5 +90,17 @@ class RemoteProvider implements PlaceholderProvider
     private function getTemporaryPath(ImageValue $value): string
     {
         return tempnam(sys_get_temp_dir(), 'placeholder') . '.' . pathinfo($value->id, PATHINFO_EXTENSION);
+    }
+
+    private function resolveOptions(array $options): array
+    {
+        $resolver = new OptionsResolver();
+        $resolver->setRequired('url_pattern');
+        $resolver->setAllowedTypes('url_pattern', 'string');
+        $resolver->setDefaults([
+            'timeout' => 5
+        ]);
+
+        return $resolver->resolve($options);
     }
 }

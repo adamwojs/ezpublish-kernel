@@ -50,7 +50,7 @@ class PlaceholderAliasGenerator implements VariationHandler
      */
     public function __construct(
         VariationHandler $aliasGenerator,
-        PlaceholderProvider $placeholderProvider,
+        ?PlaceholderProvider $placeholderProvider,
         ResolverInterface $ioResolver,
         IOServiceInterface $ioService)
     {
@@ -63,24 +63,26 @@ class PlaceholderAliasGenerator implements VariationHandler
     /**
      * {@inheritdoc}
      */
-    public function getVariation(Field $field, VersionInfo $versionInfo, $variationName, array $parameters = array())
+    public function getVariation(Field $field, VersionInfo $versionInfo, $variationName, array $parameters = [])
     {
-        /** @var \eZ\Publish\Core\FieldType\Image\Value $imageValue */
-        $imageValue = $field->value;
-        if (!$this->supportsValue($imageValue)) {
-            throw new InvalidArgumentException("Value for field #{$field->id} ($field->fieldDefIdentifier) cannot be used for image placeholder generation.");
-        }
+        if ($this->placeholderProvider !== null) {
+            /** @var \eZ\Publish\Core\FieldType\Image\Value $imageValue */
+            $imageValue = $field->value;
+            if (!$this->supportsValue($imageValue)) {
+                throw new InvalidArgumentException("Value for field #{$field->id} ($field->fieldDefIdentifier) cannot be used for image placeholder generation.");
+            }
 
-        try {
-            $this->ioResolver->resolve($imageValue->id, IORepositoryResolver::VARIATION_ORIGINAL);
-        } catch (NotResolvableException $e) {
-            // Generate placeholder for original image
-            $binary = $this->ioService->newBinaryCreateStructFromLocalFile(
-                $this->placeholderProvider->getPlaceholder($imageValue)
-            );
-            $binary->id = $imageValue->id;
+            try {
+                $this->ioResolver->resolve($imageValue->id, IORepositoryResolver::VARIATION_ORIGINAL);
+            } catch (NotResolvableException $e) {
+                // Generate placeholder for original image
+                $binary = $this->ioService->newBinaryCreateStructFromLocalFile(
+                    $this->placeholderProvider->getPlaceholder($imageValue)
+                );
+                $binary->id = $imageValue->id;
 
-            $this->ioService->createBinaryFile($binary);
+                $this->ioService->createBinaryFile($binary);
+            }
         }
 
         return $this->aliasGenerator->getVariation($field, $versionInfo, $variationName, $parameters);

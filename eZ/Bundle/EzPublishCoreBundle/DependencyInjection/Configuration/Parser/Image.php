@@ -131,5 +131,13 @@ class Image extends AbstractParser implements SuggestionCollectorAwareInterface
             );
             $this->suggestionCollector->addSuggestion($suggestion);
         }
+
+//        if (isset($scopeSettings['image_placeholders']['provider'])) {
+//            $contextualizer->setContextualParameter('image_placeholder.provider', $currentScope, $scopeSettings['image_placeholders']['provider']);
+//        }
+//
+//        if (isset($scopeSettings['image_placeholders']['config'])) {
+//            $contextualizer->setContextualParameter('image_placeholder.config', $currentScope, $scopeSettings['image_placeholders']['config']);
+//        }
     }
 }

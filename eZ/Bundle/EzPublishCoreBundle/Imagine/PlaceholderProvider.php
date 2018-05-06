@@ -18,4 +18,6 @@ interface PlaceholderProvider
      * @return string Path to placeholder
      */
     public function getPlaceholder(ImageValue $value): string;
+
+    public function setOptions(array $options);
 }
