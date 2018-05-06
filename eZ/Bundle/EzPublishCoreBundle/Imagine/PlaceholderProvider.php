@@ -15,7 +15,8 @@ interface PlaceholderProvider
      * Provides a placeholder image path for a given Image FieldType value.
      *
      * @param \eZ\Publish\Core\FieldType\Image\Value $value
+     * @param array $options
      * @return string Path to placeholder
      */
-    public function getPlaceholder(ImageValue $value): string;
+    public function getPlaceholder(ImageValue $value, array $options = []): string;
 }

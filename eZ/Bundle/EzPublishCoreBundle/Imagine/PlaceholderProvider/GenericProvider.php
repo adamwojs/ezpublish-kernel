@@ -22,32 +22,30 @@ class GenericProvider implements PlaceholderProvider
     private $imagine;
 
     /**
-     * @var array
-     */
-    private $options;
-
-    /**
      * GenericProvider constructor.
      *
      * @param \Imagine\Image\ImagineInterface $imagine
-     * @param array $options
      */
-    public function __construct(ImagineInterface $imagine, array $options = [])
+    public function __construct(ImagineInterface $imagine)
     {
         $this->imagine = $imagine;
-        $this->options = $this->resolveOptions($options);
     }
 
-    public function getPlaceholder(ImageValue $value): string
+    /**
+     * {@inheritdoc}
+     */
+    public function getPlaceholder(ImageValue $value, array $options = []): string
     {
+        $options = $this->resolveOptions($options);
+
         $palette = new Image\Palette\RGB();
-        $background = $palette->color($this->options['background']);
-        $foreground = $palette->color($this->options['foreground']);
-        $secondary = $palette->color($this->options['secondary']);
+        $background = $palette->color($options['background']);
+        $foreground = $palette->color($options['foreground']);
+        $secondary = $palette->color($options['secondary']);
 
         $size = new Image\Box($value->width, $value->height);
-        $font = $this->imagine->font($this->options['fontpath'], $this->options['fontsize'], $foreground);
-        $text = $this->getPlaceholderText($value);
+        $font = $this->imagine->font($options['fontpath'], $options['fontsize'], $foreground);
+        $text = $this->getPlaceholderText($options['text'], $value);
 
         $center = new Image\Point\Center($size);
         $textbox = $font->box($text);
@@ -79,9 +77,9 @@ class GenericProvider implements PlaceholderProvider
         return $path;
     }
 
-    private function getPlaceholderText(ImageValue $value): string
+    private function getPlaceholderText(string $pattern, ImageValue $value): string
     {
-        return strtr($this->options['text'], [
+        return strtr($pattern, [
             '%width%' => $value->width,
             '%height%' => $value->height,
             '%id%' => $value->id,

@@ -62,6 +62,7 @@ class Configuration extends SiteAccessConfiguration
         $this->addPageSection($rootNode);
         $this->addRouterSection($rootNode);
         $this->addRichTextSection($rootNode);
+        $this->addImagePlaceholderSection($rootNode);
 
         // Delegate SiteAccess config to configuration parsers
         $this->mainConfigParser->addSemanticConfig($this->generateScopeBaseNode($rootNode));
@@ -567,5 +568,30 @@ EOT;
                 ->end()
             ->end()
         ;
+    }
+
+    /**
+     * Defines configuration the images placeholder generation.
+     *
+     * @param \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition $rootNode
+     */
+    private function addImagePlaceholderSection(ArrayNodeDefinition $rootNode)
+    {
+        $rootNode
+            ->children()
+                ->arrayNode('image_placeholder')
+                    ->info('Configuration for strategy of replacing missing images')
+                    ->useAttributeAsKey('name')
+                    ->arrayPrototype()
+                        ->children()
+                            ->scalarNode('provider')
+                            ->end()
+                            ->variableNode('options')
+                                ->defaultValue([])
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
     }
 }

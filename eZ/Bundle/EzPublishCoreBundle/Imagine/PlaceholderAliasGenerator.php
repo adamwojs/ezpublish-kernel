@@ -26,11 +26,6 @@ class PlaceholderAliasGenerator implements VariationHandler
     private $aliasGenerator;
 
     /**
-     * @var \eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider
-     */
-    private $placeholderProvider;
-
-    /**
      * @var \Liip\ImagineBundle\Imagine\Cache\Resolver\ResolverInterface
      */
     private $ioResolver;
@@ -41,21 +36,28 @@ class PlaceholderAliasGenerator implements VariationHandler
     private $ioService;
 
     /**
+     * @var \eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider|null
+     */
+    private $placeholderProvider;
+
+    /**
+     * @var array
+     */
+    private $placeholderOptions = [];
+
+    /**
      * PlaceholderAliasGenerator constructor.
      *
      * @param \eZ\Publish\SPI\Variation\VariationHandler $aliasGenerator
-     * @param \eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider $placeholderProvider
      * @param \Liip\ImagineBundle\Imagine\Cache\Resolver\ResolverInterface $ioResolver
      * @param \eZ\Publish\Core\IO\IOServiceInterface $ioService
      */
     public function __construct(
         VariationHandler $aliasGenerator,
-        PlaceholderProvider $placeholderProvider,
         ResolverInterface $ioResolver,
         IOServiceInterface $ioService)
     {
         $this->aliasGenerator = $aliasGenerator;
-        $this->placeholderProvider = $placeholderProvider;
         $this->ioResolver = $ioResolver;
         $this->ioService = $ioService;
     }
@@ -63,27 +65,35 @@ class PlaceholderAliasGenerator implements VariationHandler
     /**
      * {@inheritdoc}
      */
-    public function getVariation(Field $field, VersionInfo $versionInfo, $variationName, array $parameters = array())
+    public function getVariation(Field $field, VersionInfo $versionInfo, $variationName, array $parameters = [])
     {
-        /** @var \eZ\Publish\Core\FieldType\Image\Value $imageValue */
-        $imageValue = $field->value;
-        if (!$this->supportsValue($imageValue)) {
-            throw new InvalidArgumentException("Value for field #{$field->id} ($field->fieldDefIdentifier) cannot be used for image placeholder generation.");
-        }
+        if ($this->placeholderProvider !== null) {
+            /** @var \eZ\Publish\Core\FieldType\Image\Value $imageValue */
+            $imageValue = $field->value;
+            if (!$this->supportsValue($imageValue)) {
+                throw new InvalidArgumentException("Value for field #{$field->id} ($field->fieldDefIdentifier) cannot be used for image placeholder generation.");
+            }
 
-        try {
-            $this->ioResolver->resolve($imageValue->id, IORepositoryResolver::VARIATION_ORIGINAL);
-        } catch (NotResolvableException $e) {
-            // Generate placeholder for original image
-            $binary = $this->ioService->newBinaryCreateStructFromLocalFile(
-                $this->placeholderProvider->getPlaceholder($imageValue)
-            );
-            $binary->id = $imageValue->id;
+            try {
+                $this->ioResolver->resolve($imageValue->id, IORepositoryResolver::VARIATION_ORIGINAL);
+            } catch (NotResolvableException $e) {
+                // Generate placeholder for original image
+                $binary = $this->ioService->newBinaryCreateStructFromLocalFile(
+                    $this->placeholderProvider->getPlaceholder($imageValue, $this->placeholderOptions)
+                );
+                $binary->id = $imageValue->id;
 
-            $this->ioService->createBinaryFile($binary);
+                $this->ioService->createBinaryFile($binary);
+            }
         }
 
         return $this->aliasGenerator->getVariation($field, $versionInfo, $variationName, $parameters);
+    }
+
+    public function setPlaceholderProvider(PlaceholderProvider $provider, array $options = [])
+    {
+        $this->placeholderProvider = $provider;
+        $this->placeholderOptions = $options;
     }
 
     public function supportsValue(Value $value): bool

@@ -11,6 +11,7 @@ namespace eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider;
 use eZ\Bundle\EzPublishCoreBundle\Imagine\PlaceholderProvider;
 use eZ\Publish\Core\FieldType\Image\Value as ImageValue;
 use RuntimeException;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Remote placeholder provider e.g. http://placekitten.com.
@@ -18,34 +19,14 @@ use RuntimeException;
 class RemoteProvider implements PlaceholderProvider
 {
     /**
-     * @var string
-     */
-    private $urlPattern;
-
-    /**
-     * @var int
-     */
-    private $timeout;
-
-    /**
-     * RemoteProvider constructor.
-     *
-     * @param string $urlPattern The url pattern
-     * @param int $timeout The maximum number of seconds to allow downloading image
-     */
-    public function __construct(string $urlPattern, int $timeout = 5)
-    {
-        $this->urlPattern = $urlPattern;
-        $this->timeout = $timeout;
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function getPlaceholder(ImageValue $value): string
+    public function getPlaceholder(ImageValue $value, array $options = []): string
     {
-        $path = $this->getTemporaryPath($value);
-        $placeholderUrl = $this->getPlaceholderUrl($value);
+        $options = $this->resolveOptions($options);
+
+        $path = $this->getTemporaryPath();
+        $placeholderUrl = $this->getPlaceholderUrl($options['url_pattern'], $value);
 
         try {
             $handler = curl_init();
@@ -53,7 +34,7 @@ class RemoteProvider implements PlaceholderProvider
             curl_setopt_array($handler, [
                 CURLOPT_URL => $placeholderUrl,
                 CURLOPT_FILE => fopen($path, 'wb'),
-                CURLOPT_TIMEOUT => $this->timeout,
+                CURLOPT_TIMEOUT => $options['timeout'],
                 CURLOPT_FAILONERROR => true,
             ]);
 
@@ -67,17 +48,30 @@ class RemoteProvider implements PlaceholderProvider
         return $path;
     }
 
-    private function getPlaceholderUrl(ImageValue $value): string
+    private function getPlaceholderUrl(string $urlPattern, ImageValue $value): string
     {
-        return strtr($this->urlPattern, [
+        return strtr($urlPattern, [
             '%id%' => $value->id,
             '%width%' => $value->width,
             '%height%' => $value->height,
         ]);
     }
 
-    private function getTemporaryPath(ImageValue $value): string
+    private function getTemporaryPath(): string
     {
-        return tempnam(sys_get_temp_dir(), 'placeholder') . '.' . pathinfo($value->id, PATHINFO_EXTENSION);
+        return stream_get_meta_data(tmpfile())['uri'];
+    }
+
+    private function resolveOptions(array $options): array
+    {
+        $resolver = new OptionsResolver();
+        $resolver->setDefaults([
+            'url_pattern' => '',
+            'timeout' => 5
+        ]);
+        $resolver->setAllowedTypes('url_pattern', 'string');
+        $resolver->setAllowedTypes('timeout', 'int');
+
+        return $resolver->resolve($options);
     }
 }
