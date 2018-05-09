@@ -75,17 +75,6 @@ class ExceptionConversion extends Gateway
         }
     }
 
-    public function countUserBookmarks($userId)
-    {
-        try {
-            return $this->innerGateway->countUserBookmarks($userId);
-        } catch (DBALException $e) {
-            throw new RuntimeException('Database error', 0, $e);
-        } catch (PDOException $e) {
-            throw new RuntimeException('Database error', 0, $e);
-        }
-    }
-
     public function getUserBookmarks($userId, $offset, $limit)
     {
         try {

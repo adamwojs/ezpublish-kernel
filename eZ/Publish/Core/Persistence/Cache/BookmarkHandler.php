@@ -96,18 +96,6 @@ class BookmarkHandler extends AbstractHandler implements BookmarkHandlerInterfac
     /**
      * {@inheritdoc}
      */
-    public function countUserBookmarks(int $userId): int
-    {
-        $this->logger->logCall(__METHOD__, [
-            'userId' => $userId
-        ]);
-
-        return $this->persistenceHandler->bookmarkHandler()->countUserBookmarks($userId);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function loadUserBookmarks(int $userId, int $offset, int $limit): array
     {
         $this->logger->logCall(__METHOD__, [

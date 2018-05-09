@@ -4,6 +4,7 @@
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
  * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
+
 namespace eZ\Publish\Core\Repository;
 
 use Exception;
@@ -12,8 +13,11 @@ use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\API\Repository\Values\Bookmark\BookmarkList;
 use eZ\Publish\API\Repository\Values\Content\Location;
 use eZ\Publish\Core\Base\Exceptions\InvalidArgumentException;
+use eZ\Publish\SPI\Persistence\Bookmark\Bookmark;
 use eZ\Publish\SPI\Persistence\Bookmark\CreateStruct;
 use eZ\Publish\SPI\Persistence\Bookmark\Handler as BookmarkHandler;
+use eZ\Publish\API\Repository\Values\Content\LocationQuery;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion;
 
 class BookmarkService implements BookmarkServiceInterface
 {
@@ -93,12 +97,22 @@ class BookmarkService implements BookmarkServiceInterface
      */
     public function loadBookmarks(int $offset = 0, int $limit = -1): BookmarkList
     {
-        $userId = $this->getCurrentUserId();
+        $bookmarksIds = array_map(function (Bookmark $bookmark) {
+            return $bookmark->locationId;
+        }, $this->bookmarkHandler->loadUserBookmarks($this->getCurrentUserId(), $offset, $limit));
+
+        $query = new LocationQuery([
+            'filter' => new Criterion\LocationId($bookmarksIds),
+            'offset' => $offset >= 0 ? (int)$offset : 0,
+            'limit' => $limit >= 0 ? (int)$limit : null
+        ]);
+
+        $results = $this->repository->getSearchService()->findLocations($query);
 
         $list = new BookmarkList();
-        $list->totalCount = $this->bookmarkHandler->countUserBookmarks($userId);
-        if ($list->totalCount > 0) {
-            $list->items = $this->bookmarkHandler->loadUserBookmarks($userId, $offset, $limit);
+        $list->totalCount = $results->totalCount;
+        foreach ($results->searchHits as $searchHit) {
+            $list->items[] = $searchHit->valueObject;
         }
 
         return $list;

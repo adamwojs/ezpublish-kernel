@@ -18,7 +18,5 @@ abstract class Gateway
 
     abstract public function loadBookmarkDataByUserIdAndLocationId($userId, $locationId);
 
-    abstract public function countUserBookmarks($userId);
-
     abstract public function getUserBookmarks($userId, $offset, $limit);
 }

@@ -98,18 +98,6 @@ class DoctrineDatabase extends Gateway
         return $query->execute()->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function countUserBookmarks($userId)
-    {
-        $query = $this->connection->createQueryBuilder();
-        $query
-            ->select('COUNT(' . self::COLUMN_ID . ')')
-            ->from(self::TABLE_BOOKMARKS)
-            ->where($query->expr()->eq(self::COLUMN_USER_ID, ':user_id'))
-            ->setParameter(':user_id', $userId);
-
-        return $query->execute()->fetchColumn(0);
-    }
-
     public function getUserBookmarks($userId, $offset, $limit)
     {
         $query = $this->connection->createQueryBuilder();

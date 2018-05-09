@@ -17,14 +17,6 @@ interface Handler
     public function create(CreateStruct $createStruct): Bookmark;
 
     /**
-     * Count the number of bookmarks owned by user.
-     *
-     * @param int $userId
-     * @return int
-     */
-    public function countUserBookmarks(int $userId): int;
-
-    /**
      * Delete a bookmark.
      *
      * @param int $bookmarkId
