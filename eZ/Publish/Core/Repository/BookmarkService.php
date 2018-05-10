@@ -4,10 +4,10 @@
  * @copyright Copyright (C) eZ Systems AS. All rights reserved.
  * @license For full copyright and license information view LICENSE file distributed with this source code.
  */
-
 namespace eZ\Publish\Core\Repository;
 
 use Exception;
+use eZ\Publish\API\Repository\Repository as RepositoryInterface;
 use eZ\Publish\API\Repository\BookmarkService as BookmarkServiceInterface;
 use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\API\Repository\Values\Bookmark\BookmarkList;
@@ -22,7 +22,7 @@ use eZ\Publish\API\Repository\Values\Content\Query\Criterion;
 class BookmarkService implements BookmarkServiceInterface
 {
     /**
-     * @var \eZ\Publish\Core\Repository\Repository
+     * @var \eZ\Publish\API\Repository\Repository
      */
     protected $repository;
 
@@ -34,10 +34,10 @@ class BookmarkService implements BookmarkServiceInterface
     /**
      * BookmarkService constructor.
      *
-     * @param Repository $repository
+     * @param \eZ\Publish\API\Repository\Repository $repository
      * @param \eZ\Publish\SPI\Persistence\Bookmark\Handler $bookmarkHandler
      */
-    public function __construct(Repository $repository, BookmarkHandler $bookmarkHandler)
+    public function __construct(RepositoryInterface $repository, BookmarkHandler $bookmarkHandler)
     {
         $this->repository = $repository;
         $this->bookmarkHandler = $bookmarkHandler;
@@ -97,14 +97,14 @@ class BookmarkService implements BookmarkServiceInterface
      */
     public function loadBookmarks(int $offset = 0, int $limit = -1): BookmarkList
     {
-        $bookmarksIds = array_map(function (Bookmark $bookmark) {
+        $locationIds = array_map(function (Bookmark $bookmark) {
             return $bookmark->locationId;
-        }, $this->bookmarkHandler->loadUserBookmarks($this->getCurrentUserId(), $offset, $limit));
+        }, $this->bookmarkHandler->loadUserBookmarks($this->getCurrentUserId()));
 
         $query = new LocationQuery([
-            'filter' => new Criterion\LocationId($bookmarksIds),
+            'filter' => new Criterion\LocationId($locationIds),
             'offset' => $offset >= 0 ? (int)$offset : 0,
-            'limit' => $limit >= 0 ? (int)$limit : null
+            'limit' => $limit >= 0 ? (int)$limit : null,
         ]);
 
         $results = $this->repository->getSearchService()->findLocations($query);
@@ -115,6 +115,11 @@ class BookmarkService implements BookmarkServiceInterface
             $list->items[] = $searchHit->valueObject;
         }
 
+        // Recover order specified by $locationIds
+        usort($list->items, function($a, $b) use($locationIds) {
+            return array_search($a->id, $locationIds) > array_search($b->id, $locationIds);
+        });
+
         return $list;
     }
 
@@ -124,7 +129,9 @@ class BookmarkService implements BookmarkServiceInterface
     public function isBookmarked(Location $location): bool
     {
         try {
-            $this->bookmarkHandler->loadByUserIdAndLocationId($this->getCurrentUserId(), $location->id);
+            $this->bookmarkHandler->loadByUserIdAndLocationId(
+                $this->getCurrentUserId(), $location->id
+            );
 
             return true;
         } catch (NotFoundException $e) {
@@ -132,7 +139,7 @@ class BookmarkService implements BookmarkServiceInterface
         }
     }
 
-    private function getCurrentUserId()
+    private function getCurrentUserId(): int
     {
         return $this->repository
             ->getPermissionResolver()

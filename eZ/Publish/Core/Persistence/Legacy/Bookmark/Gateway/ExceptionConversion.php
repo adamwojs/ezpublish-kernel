@@ -31,7 +31,7 @@ class ExceptionConversion extends Gateway
         $this->innerGateway = $innerGateway;
     }
 
-    public function insertBookmark(Bookmark $bookmark)
+    public function insertBookmark(Bookmark $bookmark): int
     {
         try {
             return $this->innerGateway->insertBookmark($bookmark);

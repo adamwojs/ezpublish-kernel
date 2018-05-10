@@ -57,5 +57,5 @@ interface Handler
      *
      * @return \eZ\Publish\SPI\Persistence\Bookmark\Bookmark[]
      */
-    public function loadUserBookmarks(int $userId, int $offset, int $limit): array;
+    public function loadUserBookmarks(int $userId, int $offset = 0, int $limit = -1): array;
 }

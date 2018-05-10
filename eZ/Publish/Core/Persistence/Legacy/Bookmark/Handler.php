@@ -93,7 +93,7 @@ class Handler implements HandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function loadUserBookmarks(int $userId, int $offset, int $limit): array
+    public function loadUserBookmarks(int $userId, int $offset = 0, int $limit = -1): array
     {
         return $this->mapper->extractBookmarksFromRows(
             $this->gateway->getUserBookmarks($userId, $offset, $limit)

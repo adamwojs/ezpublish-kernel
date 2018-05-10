@@ -10,7 +10,7 @@ use eZ\Publish\SPI\Persistence\Bookmark\Bookmark;
 
 abstract class Gateway
 {
-    abstract public function insertBookmark(Bookmark $bookmark);
+    abstract public function insertBookmark(Bookmark $bookmark): int;
 
     abstract public function deleteBookmark($id);
 

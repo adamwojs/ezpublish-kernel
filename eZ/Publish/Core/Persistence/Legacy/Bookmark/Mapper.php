@@ -20,7 +20,7 @@ class Mapper
      * @param \eZ\Publish\SPI\Persistence\Bookmark\CreateStruct $createStruct
      * @return \eZ\Publish\SPI\Persistence\Bookmark\Bookmark
      */
-    public function createBookmarkFromCreateStruct(CreateStruct $createStruct)
+    public function createBookmarkFromCreateStruct(CreateStruct $createStruct): Bookmark
     {
         $bookmark = new Bookmark();
         $bookmark->name = $createStruct->name;
@@ -31,12 +31,28 @@ class Mapper
     }
 
     /**
+     * Extracts Bookmark objects from $rows.
+     *
+     * @param array $rows
+     * @return \eZ\Publish\SPI\Persistence\Bookmark\Bookmark[]
+     */
+    public function extractBookmarksFromRows(array $rows): array
+    {
+        $bookmarks = [];
+        foreach ($rows as $row) {
+            $bookmarks[] = $this->extractBookmarkFromRow($row);
+        }
+
+        return $bookmarks;
+    }
+
+    /**
      * Extract Bookmark object from $row.
      *
      * @param array $row
      * @return \eZ\Publish\SPI\Persistence\Bookmark\Bookmark
      */
-    public function extractBookmarkFromRow(array $row)
+    private function extractBookmarkFromRow(array $row): Bookmark
     {
         $bookmark = new Bookmark();
         $bookmark->id = (int)$row['id'];
@@ -45,21 +61,5 @@ class Mapper
         $bookmark->locationId = (int)$row['node_id'];
 
         return $bookmark;
-    }
-
-    /**
-     * Extracts Bookmark objects from $rows.
-     *
-     * @param array $rows
-     * @return \eZ\Publish\SPI\Persistence\Bookmark\Bookmark[]
-     */
-    public function extractBookmarksFromRows(array $rows)
-    {
-        $bookmarks = [];
-        foreach ($rows as $row) {
-            $bookmarks[] = $this->extractBookmarkFromRow($row);
-        }
-
-        return $bookmarks;
     }
 }

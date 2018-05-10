@@ -24,16 +24,18 @@ interface BookmarkService
      *
      * @throws \eZ\Publish\API\Repository\Exceptions\InvalidArgumentException When location is already bookmarked
      * @throws \eZ\Publish\API\Repository\Exceptions\UnauthorizedException If the current user user is not allowed to create bookmark
+     * @throws \eZ\Publish\API\Repository\Exceptions\NotFoundException
      */
     public function createBookmark(Location $location): void;
 
     /**
-     * Remove given location from bookmarks.
+     * Delete given location from bookmarks.
      *
      * @param \eZ\Publish\API\Repository\Values\Content\Location $location
      *
      * @throws \eZ\Publish\API\Repository\Exceptions\InvalidArgumentException When location is not bookmarked
-     * @throws \eZ\Publish\API\Repository\Exceptions\UnauthorizedException f the current user user is not allowed to delete bookmark
+     * @throws \eZ\Publish\API\Repository\Exceptions\UnauthorizedException if the current user user is not allowed to delete bookmark
+     * @throws \eZ\Publish\API\Repository\Exceptions\NotFoundException
      */
     public function deleteBookmark(Location $location): void;
 

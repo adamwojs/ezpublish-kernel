@@ -30,7 +30,7 @@ class DoctrineDatabase extends Gateway
         $this->connection = $connection;
     }
 
-    public function insertBookmark(Bookmark $bookmark)
+    public function insertBookmark(Bookmark $bookmark): int
     {
         $query = $this->connection->createQueryBuilder();
         $query
@@ -40,7 +40,7 @@ class DoctrineDatabase extends Gateway
                 self::COLUMN_USER_ID => ':user_id',
                 self::COLUMN_LOCATION_ID => ':location_id',
             ])
-            ->setParameter(':name', $bookmark->name)
+            ->setParameter(':name', $bookmark->name, PDO::PARAM_STR)
             ->setParameter(':user_id', $bookmark->userId, PDO::PARAM_INT)
             ->setParameter(':location_id', $bookmark->locationId, PDO::PARAM_INT);
 
@@ -92,13 +92,13 @@ class DoctrineDatabase extends Gateway
                 $query->expr()->eq(self::COLUMN_USER_ID, ':user_id'),
                 $query->expr()->eq(self::COLUMN_LOCATION_ID, ':location_id')
             ))
-            ->setParameter(':user_id', $userId)
-            ->setParameter(':location_id', $locationId);
+            ->setParameter(':user_id', $userId, PDO::PARAM_INT)
+            ->setParameter(':location_id', $locationId, PDO::PARAM_INT);
 
         return $query->execute()->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getUserBookmarks($userId, $offset, $limit)
+    public function getUserBookmarks($userId, $offset = 0, $limit = -1)
     {
         $query = $this->connection->createQueryBuilder();
         $query
@@ -110,9 +110,14 @@ class DoctrineDatabase extends Gateway
             )
             ->from(self::TABLE_BOOKMARKS)
             ->where($query->expr()->eq(self::COLUMN_USER_ID, ':user_id'))
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->setParameter(':user_id', $userId);
+            ->setFirstResult($offset);
+
+        if ($limit > -1) {
+            $query->setMaxResults($limit);
+        }
+
+        $query->orderBy(self::COLUMN_ID, 'DESC');
+        $query->setParameter(':user_id', $userId, PDO::PARAM_INT);
 
         return $query->execute()->fetchAll(PDO::FETCH_ASSOC);
     }
