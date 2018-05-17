@@ -32,3 +32,20 @@ ALTER TABLE `ezsearch_search_phrase` ADD UNIQUE KEY `ezsearch_search_phrase_phra
 
 ALTER TABLE `ezcontentbrowsebookmark`
 ADD UNIQUE INDEX `ezcontentbrowsebookmark_user_location` (`node_id`, `user_id`);
+
+ALTER TABLE `ezcontentbrowsebookmark`
+ADD INDEX `ezcontentbrowsebookmark_location` (`node_id`);
+
+ALTER TABLE `ezcontentbrowsebookmark`
+ADD CONSTRAINT `ezcontentbrowsebookmark_location_fk`
+  FOREIGN KEY (`node_id`)
+  REFERENCES `ezcontentobject_tree` (`node_id`)
+  ON DELETE CASCADE
+  ON UPDATE NO ACTION;
+
+ALTER TABLE `ezcontentbrowsebookmark`
+ADD CONSTRAINT `ezcontentbrowsebookmark_user_fk`
+  FOREIGN KEY (`user_id`)
+  REFERENCES `ezuser` (`contentobject_id`)
+  ON DELETE CASCADE
+  ON UPDATE NO ACTION;
