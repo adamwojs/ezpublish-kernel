@@ -453,7 +453,8 @@ CREATE TABLE `ezcontentbrowsebookmark` (
   `node_id` int(11) NOT NULL DEFAULT '0',
   `user_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `ezcontentbrowsebookmark_user` (`user_id`)
+  KEY `ezcontentbrowsebookmark_user` (`user_id`),
+  UNIQUE KEY `ezcontentbrowsebookmark_user_location` (`user_id`, `node_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

@@ -25,3 +25,10 @@ ALTER TABLE `ezprest_token` ADD KEY `token_client_id` (`client_id` (191));
 
 ALTER TABLE `ezsearch_search_phrase` DROP KEY `ezsearch_search_phrase_phrase`;
 ALTER TABLE `ezsearch_search_phrase` ADD UNIQUE KEY `ezsearch_search_phrase_phrase` (`phrase` (191));
+
+--
+-- EZP-29146: As a developer, I want a API to manage bookmarks
+--
+
+ALTER TABLE `ezcontentbrowsebookmark`
+ADD UNIQUE INDEX `ezcontentbrowsebookmark_user_location` (`node_id`, `user_id`);
