@@ -538,7 +538,11 @@ CREATE TABLE ezcontentbrowsebookmark (
   id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
   name text(255) NOT NULL DEFAULT '',
   node_id integer NOT NULL DEFAULT 0,
-  user_id integer NOT NULL DEFAULT 0
+  user_id integer NOT NULL DEFAULT 0,
+  FOREIGN KEY (node_id) REFERENCES ezcontentobject_tree(node_id),
+  FOREIGN KEY (user_id) REFERENCES ezuser(contentobject_id)
 );
 
 CREATE INDEX ezcontentbrowsebookmark_user ON ezcontentbrowsebookmark(user_id);
+CREATE INDEX ezcontentbrowsebookmark_location ON ezcontentbrowsebookmark(node_id);
+CREATE INDEX ezcontentbrowsebookmark_user_location ON ezcontentbrowsebookmark(user_id, node_id);

@@ -660,6 +660,10 @@ CREATE INDEX ezuser_accountkey_hash_key ON ezuser_accountkey USING btree (hash_k
 
 CREATE INDEX ezcontentbrowsebookmark_user ON ezcontentbrowsebookmark USING btree (user_id);
 
+CREATE INDEX ezcontentbrowsebookmark_location ON ezcontentbrowsebookmark USING btree (node_id);
+
+CREATE INDEX ezcontentbrowsebookmark_user_location ON ezcontentbrowsebookmark USING btree (user_id, node_id);
+
 ALTER TABLE ONLY ezcobj_state
     ADD CONSTRAINT ezcobj_state_pkey PRIMARY KEY (id);
 
@@ -788,3 +792,17 @@ ALTER TABLE ONLY ezkeyword_attribute_link
 
 ALTER TABLE ONLY ezcontentbrowsebookmark
     ADD CONSTRAINT ezcontentbrowsebookmark_pkey PRIMARY KEY (id);
+
+ALTER TABLE ezcontentbrowsebookmark
+ADD CONSTRAINT ezcontentbrowsebookmark_location_fk
+  FOREIGN KEY (node_id)
+  REFERENCES ezcontentobject_tree (node_id)
+  ON DELETE CASCADE
+  ON UPDATE NO ACTION;
+
+ALTER TABLE ezcontentbrowsebookmark
+ADD CONSTRAINT ezcontentbrowsebookmark_user_fk
+  FOREIGN KEY (user_id)
+  REFERENCES ezuser (contentobject_id)
+  ON DELETE CASCADE
+  ON UPDATE NO ACTION;
