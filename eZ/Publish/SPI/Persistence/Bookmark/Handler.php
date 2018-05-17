@@ -55,4 +55,12 @@ interface Handler
      * @return int
      */
     public function countUserBookmarks(int $userId): int;
+
+    /**
+     * Swap bookmarks along with location swap.
+     *
+     * @param int $location1Id First location ID
+     * @param int $location2Id Second location ID
+     */
+    public function locationSwapped(int $location1Id, int $location2Id): void;
 }

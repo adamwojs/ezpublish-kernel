@@ -139,6 +139,25 @@ class DoctrineDatabase extends Gateway
         return (int) $query->execute()->fetchColumn();
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function locationSwapped(int $location1Id, int $location2Id): void
+    {
+        $query = $this->connection->createQueryBuilder();
+        $query
+            ->update(self::TABLE_BOOKMARKS)
+            ->set(self::COLUMN_LOCATION_ID, '(CASE WHEN node_id = :location_1 THEN :location_2 WHEN node_id = :location_2 THEN :location_1 END)')
+            ->where($query->expr()->orX(
+                $query->expr()->eq(self::COLUMN_LOCATION_ID, ':location_1'),
+                $query->expr()->eq(self::COLUMN_LOCATION_ID, ':location_2')
+            ))
+            ->setParameter(':location_1', $location1Id, PDO::PARAM_INT)
+            ->setParameter(':location_2', $location2Id, PDO::PARAM_INT);
+
+        $query->execute();
+    }
+
     private function getColumns(): array
     {
         return [
