@@ -91,6 +91,14 @@ CREATE TABLE ezcontent_language (
     name character varying(255) DEFAULT ''::character varying NOT NULL
 );
 
+DROP TABLE IF EXISTS ezcontentbrowsebookmark;
+CREATE TABLE ezcontentbrowsebookmark (
+  id SERIAL,
+  name character varying(255) DEFAULT ''::character varying NOT NULL,
+  node_id integer DEFAULT 0 NOT NULL,
+  user_id integer DEFAULT 0 NOT NULL
+);
+
 DROP TABLE IF EXISTS ezcontentclass;
 CREATE TABLE ezcontentclass (
     always_available integer DEFAULT 0 NOT NULL,
@@ -472,14 +480,6 @@ CREATE TABLE ezkeyword_attribute_link (
   id SERIAL,
   keyword_id integer DEFAULT 0 NOT NULL,
   objectattribute_id integer DEFAULT 0 NOT NULL
-);
-
-DROP TABLE IF EXISTS ezcontentbrowsebookmark;
-CREATE TABLE ezcontentbrowsebookmark (
-  id SERIAL,
-  name character varying(255) DEFAULT ''::character varying NOT NULL,
-  node_id integer DEFAULT 0 NOT NULL,
-  user_id integer DEFAULT 0 NOT NULL
 );
 
 CREATE INDEX ezimagefile_coid ON ezimagefile USING btree (contentobject_attribute_id);
