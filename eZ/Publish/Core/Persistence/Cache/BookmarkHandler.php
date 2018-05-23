@@ -63,11 +63,11 @@ class BookmarkHandler extends AbstractHandler implements BookmarkHandlerInterfac
                 $tags = [
                     'bookmark-' . $bookmark->id,
                     'location-' . $bookmark->locationId,
-                    'user-' . $bookmark->userId
+                    'user-' . $bookmark->userId,
                 ];
 
                 $location = $this->persistenceHandler->locationHandler()->load($bookmark->locationId);
-                foreach(explode('/', trim($location->pathString, '/')) as $locationId) {
+                foreach (explode('/', trim($location->pathString, '/')) as $locationId) {
                     $tags[] = 'location-path-' . $locationId;
                 }
 
