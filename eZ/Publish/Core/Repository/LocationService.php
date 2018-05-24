@@ -613,6 +613,7 @@ class LocationService implements LocationServiceInterface
      *
      * @param \eZ\Publish\API\Repository\Values\Content\Location $location
      * @param \eZ\Publish\API\Repository\Values\Content\Location $newParentLocation
+     * @throws \Exception
      */
     public function moveSubtree(APILocation $location, APILocation $newParentLocation)
     {
@@ -656,8 +657,8 @@ class LocationService implements LocationServiceInterface
             );
         }
 
-        $this->repository->beginTransaction();
-        try {
+        $template = new TransactionTemplate($this->repository, 3);
+        $template->execute(function() use($location, $newParentLocation) {
             $this->persistenceHandler->locationHandler()->move($location->id, $newParentLocation->id);
 
             $content = $this->repository->getContentService()->loadContent($location->contentId);
@@ -677,12 +678,7 @@ class LocationService implements LocationServiceInterface
                 $location->parentLocationId,
                 $newParentLocation->id
             );
-
-            $this->repository->commit();
-        } catch (Exception $e) {
-            $this->repository->rollback();
-            throw $e;
-        }
+        });
     }
 
     /**
