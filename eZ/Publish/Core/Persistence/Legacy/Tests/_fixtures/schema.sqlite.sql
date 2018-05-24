@@ -1,3 +1,6 @@
+-- Enable support for foreign keys. See: https://sqlite.org/foreignkeys.html#fk_enable
+PRAGMA foreign_keys = ON;
+
 CREATE TABLE ezbinaryfile (
   contentobject_attribute_id integer NOT NULL DEFAULT 0,
   download_count integer NOT NULL DEFAULT 0,
@@ -539,8 +542,8 @@ CREATE TABLE ezcontentbrowsebookmark (
   name text(255) NOT NULL DEFAULT '',
   node_id integer NOT NULL DEFAULT 0,
   user_id integer NOT NULL DEFAULT 0,
-  FOREIGN KEY (node_id) REFERENCES ezcontentobject_tree(node_id),
-  FOREIGN KEY (user_id) REFERENCES ezuser(contentobject_id)
+  CONSTRAINT ezcontentbrowsebookmark_location_fk FOREIGN KEY (node_id) REFERENCES ezcontentobject_tree(node_id) ON DELETE CASCADE,
+  CONSTRAINT ezcontentbrowsebookmark_user_fk FOREIGN KEY (user_id) REFERENCES ezuser(contentobject_id) ON DELETE CASCADE
 );
 
 CREATE INDEX ezcontentbrowsebookmark_user ON ezcontentbrowsebookmark(user_id);
