@@ -11,6 +11,7 @@ namespace eZ\Publish\Core\REST\Server\Output\ValueObjectVisitor;
 use eZ\Publish\Core\REST\Common\Output\ValueObjectVisitor;
 use eZ\Publish\Core\REST\Common\Output\Generator;
 use eZ\Publish\Core\REST\Common\Output\Visitor;
+use eZ\Publish\Core\REST\Server\Values\BookmarkList as BookmarkListValue;
 
 class BookmarkList extends ValueObjectVisitor
 {
@@ -25,6 +26,11 @@ class BookmarkList extends ValueObjectVisitor
 //        $generator->startAttribute('href', $data->path);
 //        $generator->endAttribute('href');
 
+        $generator->endObjectElement('BookmarkList');
+    }
+
+    protected function visitAttributes(Visitor $visitor, Generator $generator, BookmarkListValue $data): void
+    {
         $generator->startValueElement('count', $data->totalCount);
         $generator->endValueElement('count');
 
@@ -34,8 +40,7 @@ class BookmarkList extends ValueObjectVisitor
             $visitor->visitValueObject($restLocation);
             $generator->endObjectElement('Location');
         }
-        $generator->endList('items');
 
-        $generator->endObjectElement('BookmarkList');
+        $generator->endList('items');
     }
 }

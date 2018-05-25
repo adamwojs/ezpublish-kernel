@@ -660,6 +660,12 @@ services:
         tags:
             - { name: ezpublish_rest.output.value_object_visitor, type: eZ\Publish\Core\REST\Server\Values\CreatedLocation }
 
+    ezpublish_rest.output.value_object_visitor.Bookmark:
+        parent: ezpublish_rest.output.value_object_visitor.base
+        class: eZ\Publish\Core\REST\Server\Output\ValueObjectVisitor\Bookmark
+        tags:
+            - { name: ezpublish_rest.output.value_object_visitor, type: eZ\Publish\Core\REST\Server\Values\Bookmark }
+
     ezpublish_rest.output.value_object_visitor.RestLocation:
         parent: ezpublish_rest.output.value_object_visitor.base
         class: "%ezpublish_rest.output.value_object_visitor.RestLocation.class%"

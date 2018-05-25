@@ -11,7 +11,6 @@ namespace eZ\Publish\Core\REST\Server\Controller;
 use eZ\Publish\API\Repository\BookmarkService;
 use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
 use eZ\Publish\API\Repository\LocationService;
-use eZ\Publish\Core\REST\Common\Exceptions;
 use eZ\Publish\Core\REST\Common\Value as RestValue;
 use eZ\Publish\Core\REST\Server\Values;
 use eZ\Publish\Core\REST\Server\Controller as RestController;
@@ -41,6 +40,17 @@ class Bookmark extends RestController
         $this->locationService = $locationService;
     }
 
+    /**
+     * Add given location to bookmarks.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param string $locationPath
+     *
+     * @throws \eZ\Publish\API\Repository\Exceptions\NotFoundException
+     * @throws \eZ\Publish\API\Repository\Exceptions\UnauthorizedException
+     *
+     * @return \eZ\Publish\Core\REST\Common\Value
+     */
     public function createBookmark(Request $request, string $locationPath): RestValue
     {
         $location = $this->locationService->loadLocation(
@@ -63,6 +73,17 @@ class Bookmark extends RestController
         }
     }
 
+    /**
+     * Deletes a given bookmark.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param string $locationPath
+     *
+     * @throws \eZ\Publish\API\Repository\Exceptions\NotFoundException
+     * @throws \eZ\Publish\API\Repository\Exceptions\UnauthorizedException
+     *
+     * @return \eZ\Publish\Core\REST\Common\Value
+     */
     public function deleteBookmark(Request $request, string $locationPath): RestValue
     {
         $location = $this->locationService->loadLocation(
@@ -78,6 +99,38 @@ class Bookmark extends RestController
         }
     }
 
+    /**
+     * Checks if given location is bookmarked.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param string $locationPath
+     *
+     * @throws \eZ\Publish\API\Repository\Exceptions\NotFoundException
+     * @throws \eZ\Publish\API\Repository\Exceptions\UnauthorizedException
+     *
+     * @return \eZ\Publish\Core\REST\Common\Value
+     */
+    public function isBookmarked(Request $request, string $locationPath): RestValue
+    {
+        $location = $this->locationService->loadLocation(
+            $this->extractLocationIdFromPath($locationPath)
+        );
+
+        return new Values\LocationIsBookmarked(
+            $location,
+            $this->bookmarkService->isBookmarked($location)
+        );
+    }
+
+    /**
+     * List bookmarked locations.
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @throws \eZ\Publish\API\Repository\Exceptions\InvalidArgumentException
+     *
+     * @return \eZ\Publish\Core\REST\Common\Value
+     */
     public function loadBookmarks(Request $request): RestValue
     {
         $offset = $request->query->getInt('offset', 0);
@@ -95,24 +148,6 @@ class Bookmark extends RestController
         return new Values\BookmarkList($bookmarks->totalCount, $restLocations);
     }
 
-    public function isBookmarked(Request $request, string $locationPath): RestValue
-    {
-        $location = $this->locationService->loadLocation(
-            $this->extractLocationIdFromPath($locationPath)
-        );
-
-        if ($this->bookmarkService->isBookmarked($location)) {
-            return new Values\RestLocation(
-                $location,
-                $this->locationService->getLocationChildCount($location)
-            );
-        }
-
-        throw new Exceptions\NotFoundException(
-            "Could not find location with path string $locationPath"
-        );
-    }
-
     /**
      * Extracts and returns an item id from a path, e.g. /1/2/58 => 58.
      *
@@ -120,7 +155,7 @@ class Bookmark extends RestController
      *
      * @return mixed
      */
-    private function extractLocationIdFromPath($path)
+    private function extractLocationIdFromPath(string $path)
     {
         $pathParts = explode('/', $path);
 
