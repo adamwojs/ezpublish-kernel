@@ -211,6 +211,131 @@ SSL Client Authentication
 The REST API provides authenticating a user by a subject in a client certificate delivered by the web server configured as SSL endpoint.
 
 
+Bookmark
+========
+
+Overview
+--------
+
+================================================================= =================== ================================ ============================ ================
+Resource                                                          POST                GET                              PATCH/PUT                    DELETE
+----------------------------------------------------------------- ------------------- -------------------------------- ---------------------------- ----------------
+/bookmark                                                         .                   list bookmarked locations        .                            .
+/bookmark/<path>                                                  create new bookmark checks if location is bookmarked .                            delete bookmark
+
+Specification
+-------------
+
+List bookmarked locations
+`````````````````````````
+
+:Resource: /bookmark
+:Method: Get
+:Description: List all bookmarked locations
+:Headers:
+        :Accept:
+             :application/vnd.ez.api.Bookmark+xml:  TBD
+             :application/vnd.ez.api.Bookmark+json: TBD
+:Response:
+
+.. code:: http
+
+          HTTP/1.1 200 OK
+          Location: /bookmark
+          Accept-Patch:  application/vnd.ez.api.Bookmark+(json|xml)
+          ETag: "<newEtag>"
+          Content-Type: <depending on accept header>
+          Content-Length: <length>
+.. parsed-literal::
+
+:Error Codes:
+        :400: If the Input does not match the input schema definition, In this case the response contains an ErrorMessage_
+        :401: If the user is not authorized to create this content type group
+        :403: If a content type group with same identifier already exists
+
+
+Create bookmark
+```````````````
+
+:Resource: /bookmark/<path>
+:Method: POST
+:Description: Add given location to bookmarks.
+:Headers:
+    :Accept:
+         :application/vnd.ez.api.Bookmark+xml:  TBD
+         :application/vnd.ez.api.Bookmark+json: TBD
+:Response:
+
+.. code:: http
+
+          HTTP/1.1 201 Created
+          Location: /bookmark/<path>
+          Accept-Patch:  application/vnd.ez.api.Bookmark+(json|xml)
+          ETag: "<newEtag>"
+          Content-Type: <depending on accept header>
+          Content-Length: <length>
+.. parsed-literal::
+
+:Error Codes:
+    :400: If the Input does not match the input schema definition, In this case the response contains an ErrorMessage_
+    :401: If the user is not authorized to create this content type group
+    :403: If a content type group with same identifier already exists
+
+Get bookmark
+````````````
+
+:Resource: /bookmark/<path>
+:Method: GET
+:Description: Check if location is bookmarked.
+:Headers:
+        :Accept:
+             :application/vnd.ez.api.Bookmark+xml:  TBD
+             :application/vnd.ez.api.Bookmark+json: TBD
+:Response:
+
+.. code:: http
+
+          HTTP/1.1 200 OK
+          Location: /bookmark/<path>
+          Accept-Patch:  application/vnd.ez.api.Bookmark+(json|xml)
+          ETag: "<newEtag>"
+          Content-Type: <depending on accept header>
+          Content-Length: <length>
+.. parsed-literal::
+
+:Error Codes:
+    :400: If the Input does not match the input schema definition, In this case the response contains an ErrorMessage_
+    :401: If the user is not authorized to create this content type group
+    :403: If a content type group with same identifier already exists
+
+Delete bookmark
+```````````````
+
+:Resource: /bookmark/<path>
+:Method: DELETE
+:Description: Delete given location from bookmarks.
+:Headers:
+        :Accept:
+             :application/vnd.ez.api.Bookmark+xml:  TBD
+             :application/vnd.ez.api.Bookmark+json: TBD
+:Response:
+
+.. code:: http
+
+          HTTP/1.1 201 Created
+          Location: /bookmark/<path>
+          Accept-Patch:  application/vnd.ez.api.Bookmark+(json|xml)
+          ETag: "<newEtag>"
+          Content-Type: <depending on accept header>
+          Content-Length: <length>
+.. parsed-literal::
+
+:Error Codes:
+    :400: If the Input does not match the input schema definition, In this case the response contains an ErrorMessage_
+    :401: If the user is not authorized to create this content type group
+    :403: If a content type group with same identifier already exists
+
+
 Content
 =======
 
