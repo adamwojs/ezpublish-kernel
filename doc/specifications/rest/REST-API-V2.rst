@@ -1,4 +1,4 @@
-=======================
+﻿﻿=======================
 eZ Platform REST API V2
 =======================
 
@@ -210,27 +210,113 @@ SSL Client Authentication
 
 The REST API provides authenticating a user by a subject in a client certificate delivered by the web server configured as SSL endpoint.
 
-
 Bookmark
 ========
 
 Overview
 --------
 
+============================ ================ ================================ ================ ================
+Resource                     POST             GET                              PATCH/PUT        DELETE
+---------------------------- ---------------- -------------------------------- ---------------- ----------------
+/bookmark                    Create bookmark  List bookmarks                   .                .
+/bookmark/<path>             .                Checks if location is bookmarked .                Delete bookmark
+============================ ================ ================================ ================ ================
+
 Specification
 -------------
 
 List bookmarks
-``````````````
+~~~~~~~~~~~~~~
+
+:Resource: /bookmark
+:Method: Get
+:Description: List all bookmarked locations
+:Headers:
+    :Accept:
+        :application/vnd.ez.api.BookmarkList+xml:  if set the list is returned in XML format
+        :application/vnd.ez.api.BookmarkList+json: if set the list is returned in JSON format
+:Response:
+
+.. code:: http
+
+    HTTP/1.1 200 OK
+    Location: /bookmark
+    Accept-Patch:  application/vnd.ez.api.BookmarkList+(json|xml)
+    ETag: "<newEtag>"
+    Content-Type: <depending on accept header>
+    Content-Length: <length>
+
+:Error Codes:
+        :400: If the Input does not match the input schema definition, In this case the response contains an ErrorMessage_
+        :401: If the user is not authorized to list bookmarks
 
 Create bookmark
-```````````````
+~~~~~~~~~~~~~~~
+
+:Resource: /bookmark/<path>
+:Method: POST
+:Description: Add given location to bookmarks.
+:Headers:
+    :Accept:
+         :\*/\*:  TBD
+:Response:
+
+.. code:: http
+
+          HTTP/1.1 201 Created
+          Location: /bookmark/<path>
+          Accept-Patch: */*
+
+:Error Codes:
+        :400: If the Input does not match the input schema definition, In this case the response contains an ErrorMessage_
+        :401: If the user is not authorized to add location to bookmarks
+        :409: If location is already bookmarked
 
 Get bookmark
-````````````
+~~~~~~~~~~~~
+
+:Resource: /bookmark/<path>
+:Method: GET
+:Description: Check if location is bookmarked.
+:Headers:
+    :Accept:
+         :application/vnd.ez.api.LocationIsBookmarked+xml:  TBD
+         :application/vnd.ez.api.LocationIsBookmarked+json: TBD
+:Response:
+
+.. code:: http
+
+          HTTP/1.1 200 OK
+          Location: /bookmark/<path>
+          Accept-Patch: application/vnd.ez.api.LocationIsBookmarked+(json|xml)
+
+:Error Codes:
+    :400: If the Input does not match the input schema definition, In this case the response contains an ErrorMessage_
+    :401: If the user is not authorized to create this content type group
 
 Delete bookmark
-```````````````
+~~~~~~~~~~~~~~~
+
+:Resource: /bookmark/<path>
+:Method: DELETE
+:Description: Delete given location from bookmarks.
+:Headers:
+    :Accept:
+         :\*/\*:  TBD
+:Response:
+
+.. code:: http
+
+          HTTP/1.1 204 No Content
+          Location: /bookmark/<path>
+          Accept-Patch: */*
+
+:Error Codes:
+    :400: If the Input does not match the input schema definition, In this case the response contains an ErrorMessage_
+    :401: If the user is not authorized to create this content type group
+    :404: If a content type group with same identifier already exists
+
 
 Content
 =======
