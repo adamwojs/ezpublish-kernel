@@ -23,9 +23,7 @@ class BookmarkList extends ValueObjectVisitor
         $generator->startObjectElement('BookmarkList');
         $visitor->setHeader('Content-Type', $generator->getMediaType('BookmarkList'));
 
-//        $generator->startAttribute('href', $data->path);
-//        $generator->endAttribute('href');
-
+        $this->visitAttributes($visitor, $generator, $data);
         $generator->endObjectElement('BookmarkList');
     }
 
@@ -36,9 +34,9 @@ class BookmarkList extends ValueObjectVisitor
 
         $generator->startList('items');
         foreach ($data->items as $restLocation) {
-            $generator->startObjectElement('Location');
+            $generator->startObjectElement('Bookmark');
             $visitor->visitValueObject($restLocation);
-            $generator->endObjectElement('Location');
+            $generator->endObjectElement('Bookmark');
         }
 
         $generator->endList('items');

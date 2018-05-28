@@ -134,7 +134,7 @@ class Bookmark extends RestController
     public function loadBookmarks(Request $request): RestValue
     {
         $offset = $request->query->getInt('offset', 0);
-        $limit = $request->query->getInt('list', 25);
+        $limit = $request->query->getInt('limit', 25);
 
         $restLocations = [];
         $bookmarks = $this->bookmarkService->loadBookmarks($offset, $limit);

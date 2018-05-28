@@ -230,8 +230,11 @@ List bookmarks
 ~~~~~~~~~~~~~~
 
 :Resource: /bookmark
-:Method: Get
-:Description: List all bookmarked locations
+:Method: GET
+:Description: List bookmarked locations
+:Parameters:
+    :offset: the offset of the result set
+    :limit: the number of bookmarks returned
 :Headers:
     :Accept:
         :application/vnd.ez.api.BookmarkList+xml:  if set the list is returned in XML format
@@ -251,6 +254,143 @@ List bookmarks
         :400: If the Input does not match the input schema definition, In this case the response contains an ErrorMessage_
         :401: If the user is not authorized to list bookmarks
 
+XML Example
+```````````
+
+.. code:: xml
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <BookmarkList media-type="application/vnd.ez.api.BookmarkList+xml">
+     <count>1</count>
+     <Bookmark media-type="application/vnd.ez.api.Bookmark+xml">
+      <Location media-type="application/vnd.ez.api.Location+xml" href="/api/ezp/v2/content/locations/1/2">
+       <id>2</id>
+       <priority>0</priority>
+       <hidden>false</hidden>
+       <invisible>false</invisible>
+       <ParentLocation media-type="application/vnd.ez.api.Location+xml" href="/api/ezp/v2/content/locations/1"/>
+       <pathString>/1/2/</pathString>
+       <depth>1</depth>
+       <childCount>5</childCount>
+       <remoteId>f3e90596361e31d496d4026eb624c983</remoteId>
+       <Children media-type="application/vnd.ez.api.LocationList+xml" href="/api/ezp/v2/content/locations/1/2/children"/>
+       <Content media-type="application/vnd.ez.api.Content+xml" href="/api/ezp/v2/content/objects/1"/>
+       <sortField>PRIORITY</sortField>
+       <sortOrder>ASC</sortOrder>
+       <UrlAliases media-type="application/vnd.ez.api.UrlAliasRefList+xml" href="/api/ezp/v2/content/locations/1/2/urlaliases"/>
+       <ContentInfo media-type="application/vnd.ez.api.ContentInfo+xml" href="/api/ezp/v2/content/objects/1">
+        <Content media-type="application/vnd.ez.api.ContentInfo+xml" href="/api/ezp/v2/content/objects/1" remoteId="9459d3c29e15006e45197295722c7ade" id="1">
+         <ContentType media-type="application/vnd.ez.api.ContentType+xml" href="/api/ezp/v2/content/types/1"/>
+         <Name>Home</Name>
+         <Versions media-type="application/vnd.ez.api.VersionList+xml" href="/api/ezp/v2/content/objects/1/versions"/>
+         <CurrentVersion media-type="application/vnd.ez.api.Version+xml" href="/api/ezp/v2/content/objects/1/currentversion"/>
+         <Section media-type="application/vnd.ez.api.Section+xml" href="/api/ezp/v2/content/sections/1"/>
+         <Locations media-type="application/vnd.ez.api.LocationList+xml" href="/api/ezp/v2/content/objects/1/locations"/>
+         <Owner media-type="application/vnd.ez.api.User+xml" href="/api/ezp/v2/user/users/14"/>
+         <lastModificationDate>2018-05-21T12:19:41+00:00</lastModificationDate>
+         <publishedDate>2015-11-30T13:10:46+00:00</publishedDate>
+         <mainLanguageCode>eng-GB</mainLanguageCode>
+         <currentVersionNo>10</currentVersionNo>
+         <alwaysAvailable>true</alwaysAvailable>
+         <ObjectStates media-type="application/vnd.ez.api.ContentObjectStates+xml" href="/api/ezp/v2/content/objects/1/objectstates"/>
+        </Content>
+       </ContentInfo>
+      </Location>
+     </Bookmark>
+    </BookmarkList>
+
+
+JSON Example
+````````````
+
+.. code:: json
+
+   {
+        "BookmarkList": {
+            "_media-type": "application\/vnd.ez.api.BookmarkList+json",
+            "count": 1,
+            "items": [
+                {
+                    "_media-type": "application\/vnd.ez.api.Bookmark+json",
+                    "Location": {
+                        "_media-type": "application\/vnd.ez.api.Location+json",
+                        "_href": "\/api\/ezp\/v2\/content\/locations\/1\/2",
+                        "id": 2,
+                        "priority": 0,
+                        "hidden": false,
+                        "invisible": false,
+                        "ParentLocation": {
+                            "_media-type": "application\/vnd.ez.api.Location+json",
+                            "_href": "\/api\/ezp\/v2\/content\/locations\/1"
+                        },
+                        "pathString": "\/1\/2\/",
+                        "depth": 1,
+                        "childCount": 5,
+                        "remoteId": "f3e90596361e31d496d4026eb624c983",
+                        "Children": {
+                            "_media-type": "application\/vnd.ez.api.LocationList+json",
+                            "_href": "\/api\/ezp\/v2\/content\/locations\/1\/2\/children"
+                        },
+                        "Content": {
+                            "_media-type": "application\/vnd.ez.api.Content+json",
+                            "_href": "\/api\/ezp\/v2\/content\/objects\/1"
+                        },
+                        "sortField": "PRIORITY",
+                        "sortOrder": "ASC",
+                        "UrlAliases": {
+                            "_media-type": "application\/vnd.ez.api.UrlAliasRefList+json",
+                            "_href": "\/api\/ezp\/v2\/content\/locations\/1\/2\/urlaliases"
+                        },
+                        "ContentInfo": {
+                            "_media-type": "application\/vnd.ez.api.ContentInfo+json",
+                            "_href": "\/api\/ezp\/v2\/content\/objects\/1",
+                            "Content": {
+                                "_media-type": "application\/vnd.ez.api.ContentInfo+json",
+                                "_href": "\/api\/ezp\/v2\/content\/objects\/1",
+                                "_remoteId": "9459d3c29e15006e45197295722c7ade",
+                                "_id": 1,
+                                "ContentType": {
+                                    "_media-type": "application\/vnd.ez.api.ContentType+json",
+                                    "_href": "\/api\/ezp\/v2\/content\/types\/1"
+                                },
+                                "Name": "Home",
+                                "Versions": {
+                                    "_media-type": "application\/vnd.ez.api.VersionList+json",
+                                    "_href": "\/api\/ezp\/v2\/content\/objects\/1\/versions"
+                                },
+                                "CurrentVersion": {
+                                    "_media-type": "application\/vnd.ez.api.Version+json",
+                                    "_href": "\/api\/ezp\/v2\/content\/objects\/1\/currentversion"
+                                },
+                                "Section": {
+                                    "_media-type": "application\/vnd.ez.api.Section+json",
+                                    "_href": "\/api\/ezp\/v2\/content\/sections\/1"
+                                },
+                                "Locations": {
+                                    "_media-type": "application\/vnd.ez.api.LocationList+json",
+                                    "_href": "\/api\/ezp\/v2\/content\/objects\/1\/locations"
+                                },
+                                "Owner": {
+                                    "_media-type": "application\/vnd.ez.api.User+json",
+                                    "_href": "\/api\/ezp\/v2\/user\/users\/14"
+                                },
+                                "lastModificationDate": "2018-05-21T12:19:41+00:00",
+                                "publishedDate": "2015-11-30T13:10:46+00:00",
+                                "mainLanguageCode": "eng-GB",
+                                "currentVersionNo": 10,
+                                "alwaysAvailable": true,
+                                "ObjectStates": {
+                                    "_media-type": "application\/vnd.ez.api.ContentObjectStates+json",
+                                    "_href": "\/api\/ezp\/v2\/content\/objects\/1\/objectstates"
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+
 Create bookmark
 ~~~~~~~~~~~~~~~
 
@@ -266,11 +406,13 @@ Create bookmark
 
           HTTP/1.1 201 Created
           Location: /bookmark/<path>
-          Accept-Patch: */*
+          ETag: <etag>
+          Content-Type: <depending on accept header>
+          Content-Length: <length>
 
 :Error Codes:
         :400: If the Input does not match the input schema definition, In this case the response contains an ErrorMessage_
-        :401: If the user is not authorized to add location to bookmarks
+        :401: If the user is not authorized to create bookmark
         :409: If location is already bookmarked
 
 Get bookmark
@@ -293,7 +435,31 @@ Get bookmark
 
 :Error Codes:
     :400: If the Input does not match the input schema definition, In this case the response contains an ErrorMessage_
-    :401: If the user is not authorized to create this content type group
+    :401: If the user is not authorized
+
+
+XML Example
+```````````
+
+.. code:: xml
+
+  <?xml version="1.0" encoding="UTF-8"?>
+  <LocationIsBookmarked media-type="application/vnd.ez.api.LocationIsBookmarked+xml" href="/api/ezp/v2/bookmark/1/2">
+   <isBookmarked>true</isBookmarked>
+  </LocationIsBookmarked>
+
+JSON Example
+````````````
+
+.. code:: json
+
+  {
+      "LocationIsBookmarked": {
+          "_media-type": "application\/vnd.ez.api.LocationIsBookmarked+json",
+          "_href": "\/api\/ezp\/v2\/bookmark\/1\/2",
+          "isBookmarked": true
+      }
+  }
 
 Delete bookmark
 ~~~~~~~~~~~~~~~
@@ -309,13 +475,11 @@ Delete bookmark
 .. code:: http
 
           HTTP/1.1 204 No Content
-          Location: /bookmark/<path>
-          Accept-Patch: */*
 
 :Error Codes:
     :400: If the Input does not match the input schema definition, In this case the response contains an ErrorMessage_
     :401: If the user is not authorized to create this content type group
-    :404: If a content type group with same identifier already exists
+    :404: If a given location is not bookmarked
 
 
 Content

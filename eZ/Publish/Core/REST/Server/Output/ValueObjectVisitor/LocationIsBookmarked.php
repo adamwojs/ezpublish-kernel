@@ -37,7 +37,7 @@ class LocationIsBookmarked extends ValueObjectVisitor
         );
         $generator->endAttribute('href');
 
-        $generator->startValueElement('isBookmarked', $data->isBookmarked);
+        $generator->startValueElement('isBookmarked', $this->serializeBool($generator, $data->isBookmarked));
         $generator->endValueElement('isBookmarked');
     }
 }
