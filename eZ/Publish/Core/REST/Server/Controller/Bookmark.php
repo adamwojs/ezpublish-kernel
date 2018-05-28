@@ -10,7 +10,9 @@ namespace eZ\Publish\Core\REST\Server\Controller;
 
 use eZ\Publish\API\Repository\BookmarkService;
 use eZ\Publish\API\Repository\Exceptions\InvalidArgumentException;
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
 use eZ\Publish\API\Repository\LocationService;
+use eZ\Publish\Core\REST\Common\Exceptions;
 use eZ\Publish\Core\REST\Common\Value as RestValue;
 use eZ\Publish\Core\REST\Server\Values;
 use eZ\Publish\Core\REST\Server\Controller as RestController;
@@ -95,7 +97,7 @@ class Bookmark extends RestController
 
             return new Values\NoContent();
         } catch (InvalidArgumentException $e) {
-            return new Values\Conflict();
+            throw new Exceptions\NotFoundException("Location $locationPath is not bookmarked");
         }
     }
 
@@ -108,18 +110,19 @@ class Bookmark extends RestController
      * @throws \eZ\Publish\API\Repository\Exceptions\NotFoundException
      * @throws \eZ\Publish\API\Repository\Exceptions\UnauthorizedException
      *
-     * @return \eZ\Publish\Core\REST\Common\Value
+     * @return \eZ\Publish\Core\REST\Server\Values\OK
      */
-    public function isBookmarked(Request $request, string $locationPath): RestValue
+    public function isBookmarked(Request $request, string $locationPath): Values\OK
     {
         $location = $this->locationService->loadLocation(
             $this->extractLocationIdFromPath($locationPath)
         );
 
-        return new Values\LocationIsBookmarked(
-            $location,
-            $this->bookmarkService->isBookmarked($location)
-        );
+        if (!$this->bookmarkService->isBookmarked($location)) {
+            throw new Exceptions\NotFoundException("Location $locationPath is not bookmarked");
+        }
+
+        return new Values\OK();
     }
 
     /**

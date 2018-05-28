@@ -216,12 +216,12 @@ Bookmark
 Overview
 --------
 
-============================ ================ ================================ ================ ================
-Resource                     POST             GET                              PATCH/PUT        DELETE
----------------------------- ---------------- -------------------------------- ---------------- ----------------
-/bookmark                    Create bookmark  List bookmarks                   .                .
-/bookmark/<path>             .                Checks if location is bookmarked .                Delete bookmark
-============================ ================ ================================ ================ ================
+====================== ================ ================ =============================== ================ ================
+Resource                     POST             GET              HEAD                      PATCH/PUT        DELETE
+---------------------- ---------------- ---------------- ------------------------------- ---------------- ----------------
+/bookmark              .                List bookmarks   .                               .                .
+/bookmark/<path>       Create bookmark  .                Check if location is bookmarked .                Delete bookmark
+====================== ================ ================ =============================== ================ ================
 
 Specification
 -------------
@@ -397,9 +397,6 @@ Create bookmark
 :Resource: /bookmark/<path>
 :Method: POST
 :Description: Add given location to bookmarks.
-:Headers:
-    :Accept:
-         :\*/\*:  TBD
 :Response:
 
 .. code:: http
@@ -411,55 +408,27 @@ Create bookmark
           Content-Length: <length>
 
 :Error Codes:
-        :400: If the Input does not match the input schema definition, In this case the response contains an ErrorMessage_
-        :401: If the user is not authorized to create bookmark
+        :401: If the user is not authorized to given location
+        :404: If a given location not exists
         :409: If location is already bookmarked
 
-Get bookmark
+Check if location is bookmarked.
 ~~~~~~~~~~~~
 
 :Resource: /bookmark/<path>
-:Method: GET
-:Description: Check if location is bookmarked.
-:Headers:
-    :Accept:
-         :application/vnd.ez.api.LocationIsBookmarked+xml:  TBD
-         :application/vnd.ez.api.LocationIsBookmarked+json: TBD
+:Method: HEAD
+:Description: Check if given location is bookmarked.
 :Response:
 
 .. code:: http
 
           HTTP/1.1 200 OK
           Location: /bookmark/<path>
-          Accept-Patch: application/vnd.ez.api.LocationIsBookmarked+(json|xml)
 
 :Error Codes:
-    :400: If the Input does not match the input schema definition, In this case the response contains an ErrorMessage_
-    :401: If the user is not authorized
+    :401: If the user is not authorized to given location
+    :404: If a given location not exists / is not bookmarked
 
-
-XML Example
-```````````
-
-.. code:: xml
-
-  <?xml version="1.0" encoding="UTF-8"?>
-  <LocationIsBookmarked media-type="application/vnd.ez.api.LocationIsBookmarked+xml" href="/api/ezp/v2/bookmark/1/2">
-   <isBookmarked>true</isBookmarked>
-  </LocationIsBookmarked>
-
-JSON Example
-````````````
-
-.. code:: json
-
-  {
-      "LocationIsBookmarked": {
-          "_media-type": "application\/vnd.ez.api.LocationIsBookmarked+json",
-          "_href": "\/api\/ezp\/v2\/bookmark\/1\/2",
-          "isBookmarked": true
-      }
-  }
 
 Delete bookmark
 ~~~~~~~~~~~~~~~
@@ -467,9 +436,6 @@ Delete bookmark
 :Resource: /bookmark/<path>
 :Method: DELETE
 :Description: Delete given location from bookmarks.
-:Headers:
-    :Accept:
-         :\*/\*:  TBD
 :Response:
 
 .. code:: http
@@ -477,9 +443,8 @@ Delete bookmark
           HTTP/1.1 204 No Content
 
 :Error Codes:
-    :400: If the Input does not match the input schema definition, In this case the response contains an ErrorMessage_
-    :401: If the user is not authorized to create this content type group
-    :404: If a given location is not bookmarked
+    :401: If the user is not authorized to given location
+    :404: If a given location not exists / is not bookmarked
 
 
 Content

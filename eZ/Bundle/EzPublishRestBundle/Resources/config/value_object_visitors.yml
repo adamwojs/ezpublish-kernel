@@ -877,9 +877,3 @@ services:
         class: eZ\Publish\Core\REST\Server\Output\ValueObjectVisitor\BookmarkList
         tags:
             - { name: ezpublish_rest.output.value_object_visitor, type: eZ\Publish\Core\REST\Server\Values\BookmarkList }
-
-    ezpublish_rest.output.value_object_visitor.LocationIsBookmarked:
-        parent: ezpublish_rest.output.value_object_visitor.base
-        class: eZ\Publish\Core\REST\Server\Output\ValueObjectVisitor\LocationIsBookmarked
-        tags:
-            - { name: ezpublish_rest.output.value_object_visitor, type: eZ\Publish\Core\REST\Server\Values\LocationIsBookmarked }
