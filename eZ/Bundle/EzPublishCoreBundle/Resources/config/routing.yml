@@ -86,7 +86,7 @@ services:
 
     ezpublish.siteaccess_listener:
         class: "%ezpublish.siteaccess_listener.class%"
-        arguments: ["@router.default", "@ezpublish.urlalias_generator", "@security.http_utils"]
+        arguments: ["@router.default", "@ezpublish.urlalias_generator", "@security.http_utils", "@fos_http_cache.user_context.request_matcher"]
         calls:
             - [setContainer, ["@service_container"]]
         tags:

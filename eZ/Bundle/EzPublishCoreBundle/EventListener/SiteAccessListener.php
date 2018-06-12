@@ -15,6 +15,7 @@ use eZ\Publish\Core\MVC\Symfony\SiteAccess\URILexer;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\RequestMatcherInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Http\HttpUtils;
 
@@ -40,11 +41,21 @@ class SiteAccessListener implements EventSubscriberInterface, ContainerAwareInte
      */
     private $httpUtils;
 
-    public function __construct(RouterInterface $defaultRouter, UrlAliasGenerator $urlAliasGenerator, HttpUtils $httpUtils)
+    /**
+     * @var \Symfony\Component\HttpFoundation\RequestMatcherInterface
+     */
+    private $userContextRequestMatcher;
+
+    public function __construct(
+        RouterInterface $defaultRouter,
+        UrlAliasGenerator $urlAliasGenerator,
+        HttpUtils $httpUtils,
+        RequestMatcherInterface $userContextRequestMatcher)
     {
         $this->defaultRouter = $defaultRouter;
         $this->urlAliasGenerator = $urlAliasGenerator;
         $this->httpUtils = $httpUtils;
+        $this->userContextRequestMatcher = $userContextRequestMatcher;
     }
 
     public static function getSubscribedEvents()
@@ -82,7 +93,7 @@ class SiteAccessListener implements EventSubscriberInterface, ContainerAwareInte
 
         // Analyse the pathinfo if needed since it might contain the siteaccess (i.e. like in URI mode)
         $pathinfo = rawurldecode($request->getPathInfo());
-        if ($siteAccess->matcher instanceof URILexer) {
+        if ($siteAccess->matcher instanceof URILexer && !$this->userContextRequestMatcher->matches($request)) {
             $semanticPathinfo = $siteAccess->matcher->analyseURI($pathinfo);
         } else {
             $semanticPathinfo = $pathinfo;
