@@ -574,6 +574,8 @@ services:
 
     eZ\Publish\Core\FieldType\ImageAsset\Type:
         parent: ezpublish.fieldType
+        arguments:
+            - '@ezpublish.api.service.content'
         tags:
             - {name: ezpublish.fieldType, alias: ezimageasset}
 

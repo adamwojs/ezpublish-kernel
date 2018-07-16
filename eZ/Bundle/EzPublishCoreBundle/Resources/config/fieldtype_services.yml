@@ -300,3 +300,16 @@ services:
         autowire: true
         tags:
             - {name: ezpublish.fieldType.nameable, alias: ezimageasset}
+
+    ezpublish.fieldType.ezimageasset.mapper:
+        class: 'eZ\Publish\Core\FieldType\ImageAsset\Mapper'
+        public: true
+        arguments:
+            - '@ezpublish.api.service.content'
+            - '@ezpublish.api.service.location'
+            - '@ezpublish.api.service.content_type'
+        calls:
+            - ['setContentTypeIdentifier', ['image']]
+            - ['setFileFieldIdentifier', ['image']]
+            - ['setNameFieldIdentifier', ['name']]
+            - ['setParentLocationId', [51]]

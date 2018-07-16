@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace eZ\Publish\Core\FieldType\ImageAsset;
 
-use eZ\Publish\Core\FieldType\Value as BaseValue;
+use eZ\Publish\Core\FieldType\Image\Value as BaseValue;
 
 class Value extends BaseValue
 {
@@ -21,17 +21,14 @@ class Value extends BaseValue
 
     /**
      * @param mixed|null $destinationContentId
+     * @param array $imageData
+     *
+     * @throws \eZ\Publish\API\Repository\Exceptions\InvalidArgumentException
      */
-    public function __construct($destinationContentId = null)
+    public function __construct($destinationContentId = null, array $imageData = [])
     {
-        $this->destinationContentId = $destinationContentId;
-    }
+        parent::__construct($imageData);
 
-    /**
-     * @see \eZ\Publish\Core\FieldType\Value
-     */
-    public function __toString()
-    {
-        return (string)$this->destinationContentId;
+        $this->destinationContentId = $destinationContentId;
     }
 }

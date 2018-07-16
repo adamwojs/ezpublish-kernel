@@ -8,6 +8,9 @@ declare(strict_types=1);
 
 namespace eZ\Publish\Core\FieldType\ImageAsset;
 
+use eZ\Publish\API\Repository\ContentService;
+use eZ\Publish\API\Repository\Exceptions\NotFoundException;
+use eZ\Publish\API\Repository\Exceptions\UnauthorizedException;
 use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\Core\FieldType\FieldType;
 use eZ\Publish\API\Repository\Values\Content\ContentInfo;
@@ -18,6 +21,9 @@ use eZ\Publish\Core\FieldType\Value as BaseValue;
 
 class Type extends FieldType
 {
+    /** @var \eZ\Publish\API\Repository\ContentService */
+    private $contentService;
+
     protected $settingsSchema = [
         'selectionDefaultLocation' => [
             'type' => 'string',
@@ -33,6 +39,16 @@ class Type extends FieldType
             ],
         ],
     ];
+
+    /**
+     * Type constructor.
+     *
+     * @param \eZ\Publish\API\Repository\ContentService $contentService
+     */
+    public function __construct(ContentService $contentService)
+    {
+        $this->contentService = $contentService;
+    }
 
     /**
      * @see \eZ\Publish\Core\FieldType\FieldType::validateFieldSettings()
@@ -129,12 +145,29 @@ class Type extends FieldType
     protected function createValueFromInput($inputValue)
     {
         if ($inputValue instanceof ContentInfo) {
-            $inputValue = new Value($inputValue->id);
-        } elseif (is_int($inputValue) || is_string($inputValue)) { // content id
-            $inputValue = new Value($inputValue);
+            $inputValue = $this->createValueFromDestinationContentId($inputValue->id);
+        } elseif (is_int($inputValue) || is_string($inputValue)) {
+            $inputValue = $this->createValueFromDestinationContentId($inputValue);
         }
 
         return $inputValue;
+    }
+
+    private function createValueFromDestinationContentId($id) {
+        $imageData = [];
+
+        try {
+            /** @var \eZ\Publish\Core\FieldType\Image\Value $imageValue */
+            $imageValue = $this
+                ->contentService
+                ->loadContent($id)
+                ->getFieldValue('image');
+
+            $imageData = (array) $imageValue;
+        } catch(NotFoundException | UnauthorizedException $e) {
+        }
+
+        return new Value($id, $imageData);
     }
 
     /**
@@ -177,7 +210,11 @@ class Type extends FieldType
      */
     public function fromHash($hash)
     {
-        return new Value($hash['destinationContentId']);
+        if ($hash) {
+            return $this->createValueFromDestinationContentId($hash['destinationContentId']);
+        }
+
+        return new Value();
     }
 
     /**
@@ -189,7 +226,9 @@ class Type extends FieldType
      */
     public function toHash(SPIValue $value)
     {
-        return ['destinationContentId' => $value->destinationContentId];
+        return [
+            'destinationContentId' => $value->destinationContentId
+        ];
     }
 
     /**
