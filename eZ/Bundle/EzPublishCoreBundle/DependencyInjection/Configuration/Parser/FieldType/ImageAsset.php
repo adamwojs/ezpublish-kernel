@@ -55,13 +55,11 @@ class ImageAsset extends AbstractFieldTypeParser
         $fieldTypeIdentifier = $this->getFieldTypeIdentifier();
 
         if (isset($scopeSettings['fieldtypes'][$fieldTypeIdentifier])) {
-            foreach ($scopeSettings['fieldtypes'][$fieldTypeIdentifier] as $key => $value) {
-                $contextualizer->setContextualParameter(
-                    "fieldtypes.{$fieldTypeIdentifier}.{$key}",
-                    $currentScope,
-                    $scopeSettings['fieldtypes'][$fieldTypeIdentifier][$key]
-                );
-            }
+            $contextualizer->setContextualParameter(
+                "fieldtypes.{$fieldTypeIdentifier}.mappings",
+                $currentScope,
+                $scopeSettings['fieldtypes'][$fieldTypeIdentifier]
+            );
         }
     }
 }

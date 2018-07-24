@@ -27,32 +27,28 @@ class Mapper
     private $locationService;
     /** @var \eZ\Publish\API\Repository\ContentTypeService */
     private $contentTypeService;
+    /** @var array */
+    private $mappings = [];
 
-    /** @var string */
-    private $contentTypeIdentifier;
     /** @var int */
-    private $contentTypeId;
-    /** @var string */
-    private $fileFieldIdentifier;
-    /** @var string */
-    private $nameFieldIdentifier;
-    /** @var string */
-    private $parentLocationId;
+    private $contentTypeId = null;
 
     /**
      * @param \eZ\Publish\API\Repository\ContentService $contentService
      * @param \eZ\Publish\API\Repository\LocationService $locationService
      * @param \eZ\Publish\API\Repository\ContentTypeService $contentTypeService
+     * @param array $mappings
      */
     public function __construct(
         ContentService $contentService,
         LocationService $locationService,
         ContentTypeService $contentTypeService,
-        array $config = [])
+        array $mappings)
     {
         $this->contentService = $contentService;
         $this->locationService = $locationService;
         $this->contentTypeService = $contentTypeService;
+        $this->mappings = $mappings;
     }
 
     /**
@@ -64,14 +60,14 @@ class Mapper
     public function createAsset(string $name, ImageValue $image, string $languageCode): Content
     {
         try {
-            $contentType = $this->contentTypeService->loadContentTypeByIdentifier($this->contentTypeIdentifier);
+            $contentType = $this->contentTypeService->loadContentTypeByIdentifier($this->mappings['content_type_identifier']);
 
             $contentCreateStruct = $this->contentService->newContentCreateStruct($contentType, $languageCode);
-            $contentCreateStruct->setField($this->nameFieldIdentifier, $name);
-            $contentCreateStruct->setField($this->fileFieldIdentifier, $image);
+            $contentCreateStruct->setField($this->mappings['name_field_identifier'], $name);
+            $contentCreateStruct->setField($this->mappings['content_field_identifier'], $image);
 
             $contentDraft = $this->contentService->createContent($contentCreateStruct, [
-                $this->locationService->newLocationCreateStruct($this->parentLocationId)
+                $this->locationService->newLocationCreateStruct($this->mappings['parent_location_id'])
             ]);
 
             return $this->contentService->publishVersion($contentDraft->versionInfo);
@@ -94,7 +90,7 @@ class Mapper
             throw new InvalidArgumentException("contentId", "Content {$content->id} is not a image asset!");
         }
 
-        return $content->getField($this->fileFieldIdentifier);
+        return $content->getField($this->mappings['content_field_identifier']);
     }
 
     /**
@@ -110,11 +106,12 @@ class Mapper
             throw new InvalidArgumentException("contentId", "Content {$content->id} is not a image asset!");
         }
 
-        return $content->getFieldValue($this->fileFieldIdentifier);
+        return $content->getFieldValue($this->mappings['content_field_identifier']);
     }
 
     /**
      * @param \eZ\Publish\API\Repository\Values\Content\Content $content
+     *
      * @return bool
      */
     public function isValidDestinationContent(Content $content): bool
@@ -122,33 +119,12 @@ class Mapper
         return $content->contentInfo->contentTypeId === $this->getContentTypeId();
     }
 
-    public function setContentTypeIdentifier(string $contentTypeIdentifier): void
-    {
-        $this->contentTypeIdentifier = $contentTypeIdentifier;
-        $this->contentTypeId = null;
-    }
-
-    public function setFileFieldIdentifier(string $fileFieldIdentifier): void
-    {
-        $this->fileFieldIdentifier = $fileFieldIdentifier;
-    }
-
-    public function setNameFieldIdentifier(string $nameFieldIdentifier): void
-    {
-        $this->nameFieldIdentifier = $nameFieldIdentifier;
-    }
-
-    public function setParentLocationId(string $parentLocationId): void
-    {
-        $this->parentLocationId = $parentLocationId;
-    }
-
     private function getContentTypeId(): ?int
     {
         if ($this->contentTypeId === null) {
             $this->contentTypeId = $this
                 ->contentTypeService
-                ->loadContentTypeByIdentifier($this->contentTypeIdentifier)
+                ->loadContentTypeByIdentifier($this->mappings['content_type_identifier'])
                 ->id;
         }
 

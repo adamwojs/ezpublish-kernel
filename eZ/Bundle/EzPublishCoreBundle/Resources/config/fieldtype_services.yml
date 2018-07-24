@@ -91,13 +91,6 @@ services:
         tags:
             - {name: ezpublish.fieldType.parameterProvider, alias: ezobjectrelationlist}
 
-    ezpublish.fieldType.ezimageasset.parameterProvider:
-        class: \eZ\Publish\Core\MVC\Symfony\FieldType\ImageAsset\ParameterProvider
-        arguments:
-            - "@ezpublish.api.service.content"
-        tags:
-            - {name: ezpublish.fieldType.parameterProvider, alias: ezobjectrelationlist}
-
     # Page
     ezpublish.fieldType.ezpage.pageService.factory:
         class: "%ezpublish.fieldType.ezpage.pageService.factory.class%"
@@ -303,8 +296,6 @@ services:
 
     eZ\Publish\Core\FieldType\ImageAsset\Mapper:
         autowire: true
-        calls:
-            - ['setContentTypeIdentifier', ['$fieldtypes.ezimageasset.content_type_identifier$']]
-            - ['setFileFieldIdentifier', ['$fieldtypes.ezimageasset.content_field_identifier$']]
-            - ['setNameFieldIdentifier', ['$fieldtypes.ezimageasset.name_field_identifier$']]
-            - ['setParentLocationId', ['$fieldtypes.ezimageasset.parent_location_id$']]
+        arguments:
+            $mappings: '$fieldtypes.ezimageasset.mappings$'
+

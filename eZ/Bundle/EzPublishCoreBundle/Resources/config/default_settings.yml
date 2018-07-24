@@ -25,10 +25,12 @@ parameters:
     # Rich Text Custom Tags default scope (for SiteAccess) configuration
     ezsettings.default.fieldtypes.ezrichtext.custom_tags: []
 
-    ezsettings.default.fieldtypes.ezimageasset.content_type_identifier: image
-    ezsettings.default.fieldtypes.ezimageasset.content_field_identifier: image
-    ezsettings.default.fieldtypes.ezimageasset.name_field_identifier: name
-    ezsettings.default.fieldtypes.ezimageasset.parent_location_id: 51
+    # Image Asset mappings
+    ezsettings.default.fieldtypes.ezimageasset.mappings:
+        content_type_identifier: image
+        content_field_identifier: image
+        name_field_identifier: name
+        parent_location_id: 51
 
     ezsettings.default.pagelayout: 'EzPublishCoreBundle::pagelayout.html.twig'
 
