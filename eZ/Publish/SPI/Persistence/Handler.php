@@ -79,6 +79,11 @@ interface Handler
     public function notificationHandler();
 
     /**
+     * @return \eZ\Publish\SPI\Persistence\ContentReview\Handler
+     */
+    public function contentReviewHandler();
+
+    /**
      * @return \eZ\Publish\SPI\Persistence\TransactionHandler
      */
     public function transactionHandler();

@@ -12,6 +12,7 @@ use eZ\Publish\API\Repository\Values\User\User;
 use eZ\Publish\API\Repository\Values\User\UserReference as APIUserReference;
 use eZ\Publish\Core\Base\Exceptions\InvalidArgumentValue;
 use eZ\Publish\Core\Base\Exceptions\InvalidArgumentType;
+use eZ\Publish\Core\Repository\ContentReviewService;
 use eZ\Publish\Core\Repository\Helper\RelationProcessor;
 use eZ\Publish\Core\Repository\Permission\CachedPermissionService;
 use eZ\Publish\Core\Repository\Permission\PermissionCriterionResolver;
@@ -23,6 +24,7 @@ use Closure;
 use Exception;
 use RuntimeException;
 use eZ\Publish\API\Repository\NotificationService as NotificationServiceInterface;
+use eZ\Publish\API\Repository\ContentReviewService as ContentReviewServiceInterface;
 
 /**
  * Repository class.
@@ -200,6 +202,13 @@ class Repository implements RepositoryInterface
      * @var \eZ\Publish\API\Repository\NotificationService
      */
     protected $notificationService;
+
+    /**
+     * Instance of ContentReviewService service.
+     *
+     * @var ContentReviewService
+     */
+    protected $contentReviewService;
 
     /**
      * Service settings, first level key is service name.
@@ -879,6 +888,23 @@ class Repository implements RepositoryInterface
         );
 
         return $this->notificationService;
+    }
+
+    /**
+     * @return \eZ\Publish\API\Repository\ContentReviewService
+     */
+    public function getContentReviewService(): ContentReviewServiceInterface
+    {
+        if (null !== $this->contentReviewService) {
+            return $this->contentReviewService;
+        }
+
+        $this->contentReviewService = new ContentReviewService(
+            $this,
+            $this->persistenceHandler->contentReviewHandler()
+        );
+        
+        return $this->contentReviewService;
     }
 
     /**

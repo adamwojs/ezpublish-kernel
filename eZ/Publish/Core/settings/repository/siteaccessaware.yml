@@ -15,7 +15,6 @@ services:
             - '@ezpublish.siteaccessaware.service.language'
             - '@ezpublish.siteaccessaware.service.notification'
 
-
     ezpublish.siteaccessaware.service.content:
         class: eZ\Publish\Core\Repository\SiteAccessAware\ContentService
         arguments:

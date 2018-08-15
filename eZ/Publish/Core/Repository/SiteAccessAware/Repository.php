@@ -200,6 +200,11 @@ class Repository implements RepositoryInterface
         return $this->repository->getNotificationService();
     }
 
+    public function getContentReviewService()
+    {
+        return $this->repository->getContentReviewService();
+    }
+
     public function beginTransaction()
     {
         return $this->repository->beginTransaction();

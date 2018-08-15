@@ -23,6 +23,7 @@ use eZ\Publish\SPI\Persistence\TransactionHandler as SPITransactionHandler;
 use eZ\Publish\Core\Persistence\Legacy\URL\Handler as UrlHandler;
 use eZ\Publish\SPI\Persistence\Bookmark\Handler as BookmarkHandler;
 use eZ\Publish\SPI\Persistence\Notification\Handler as NotificationHandler;
+use eZ\Publish\SPI\Persistence\ContentReview\Handler as ContentReviewHandler;
 
 /**
  * The main handler for Legacy Storage Engine.
@@ -71,6 +72,9 @@ class Handler implements HandlerInterface
     /** @var \eZ\Publish\SPI\Persistence\Notification\Handler */
     protected $notificationHandler;
 
+    /** @var \eZ\Publish\SPI\Persistence\ContentReview\Handler */
+    protected $contentReviewHandler;
+
     /**
      * @param \eZ\Publish\SPI\Persistence\Content\Handler $contentHandler
      * @param \eZ\Publish\SPI\Persistence\Content\Type\Handler $contentTypeHandler
@@ -86,6 +90,7 @@ class Handler implements HandlerInterface
      * @param \eZ\Publish\Core\Persistence\Legacy\URL\Handler $urlHandler
      * @param \eZ\Publish\SPI\Persistence\Bookmark\Handler $bookmarkHandler
      * @param \eZ\Publish\SPI\Persistence\Notification\Handler $notificationHandler
+     * @param \eZ\Publish\SPI\Persistence\ContentReview\Handler $contentReviewHandler
      */
     public function __construct(
         ContentHandler $contentHandler,
@@ -101,7 +106,8 @@ class Handler implements HandlerInterface
         UserHandler $userHandler,
         UrlHandler $urlHandler,
         BookmarkHandler $bookmarkHandler,
-        NotificationHandler $notificationHandler
+        NotificationHandler $notificationHandler,
+        ContentReviewHandler $contentReviewHandler
     ) {
         $this->contentHandler = $contentHandler;
         $this->contentTypeHandler = $contentTypeHandler;
@@ -117,6 +123,7 @@ class Handler implements HandlerInterface
         $this->urlHandler = $urlHandler;
         $this->bookmarkHandler = $bookmarkHandler;
         $this->notificationHandler = $notificationHandler;
+        $this->contentReviewHandler = $contentReviewHandler;
     }
 
     public function contentHandler()
@@ -185,6 +192,14 @@ class Handler implements HandlerInterface
     public function notificationHandler(): NotificationHandler
     {
         return $this->notificationHandler;
+    }
+
+    /**
+     * @return \eZ\Publish\SPI\Persistence\ContentReview\Handler
+     */
+    public function contentReviewHandler(): ContentReviewHandler
+    {
+        return $this->contentReviewHandler;
     }
 
     /**

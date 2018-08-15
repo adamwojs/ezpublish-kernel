@@ -2572,6 +2572,33 @@ CREATE TABLE `eznotification` (
   KEY `eznotification_owner_is_pending` (`owner_id`, `is_pending`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Table structure for table `ezcontentobject_review`
+--
+CREATE TABLE `ezcontentobject_review` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `contentobject_id` int(11) NOT NULL,
+  `version` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Table structure for table `ezcontentobject_review_comment`
+--
+CREATE TABLE `ezcontentobject_review_comment` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `contentobject_review_id` int(11) NOT NULL,
+  `contentclass_attribute_id` int(11) NOT NULL,
+  `comment` text NOT NULL,
+  `created` int(11) NOT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

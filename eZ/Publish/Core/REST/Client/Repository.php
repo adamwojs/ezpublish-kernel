@@ -501,6 +501,11 @@ class Repository implements APIRepository
         throw new \RuntimeException('@todo: Implement');
     }
 
+    public function getContentReviewService()
+    {
+        throw new \RuntimeException('@todo: Implement');
+    }
+
     /**
      * Begin transaction.
      *

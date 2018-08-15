@@ -1,0 +1,19 @@
+services:
+    eZ\Publish\Core\Persistence\Legacy\ContentReview\Gateway\DoctrineDatabase:
+        arguments:
+            $connection: '@ezpublish.persistence.connection'
+
+    eZ\Publish\Core\Persistence\Legacy\ContentReview\Gateway\ExceptionConversion:
+        arguments:
+            $innerGateway: '@eZ\Publish\Core\Persistence\Legacy\ContentReview\Gateway\DoctrineDatabase'
+
+    eZ\Publish\Core\Persistence\Legacy\ContentReview\Mapper: ~
+
+    eZ\Publish\Core\Persistence\Legacy\ContentReview\Handler:
+        arguments:
+            $gateway: '@eZ\Publish\Core\Persistence\Legacy\ContentReview\Gateway\ExceptionConversion'
+            $mapper: '@eZ\Publish\Core\Persistence\Legacy\ContentReview\Mapper'
+        lazy: true
+
+    ezpublish.spi.persistence.legacy.content_review.handler:
+        alias: 'eZ\Publish\Core\Persistence\Legacy\ContentReview\Handler'

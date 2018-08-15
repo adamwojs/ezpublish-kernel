@@ -220,6 +220,13 @@ interface Repository
     public function getNotificationService();
 
     /**
+     * Get ContentReviewService.
+     *
+     * @return \eZ\Publish\API\Repository\ContentReviewService
+     */
+    public function getContentReviewService();
+
+    /**
      * Begin transaction.
      *
      * Begins an transaction, make sure you'll call commit or rollback when done,

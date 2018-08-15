@@ -7,6 +7,7 @@
 namespace eZ\Publish\Core\SignalSlot;
 
 use eZ\Publish\API\Repository\BookmarkService;
+use eZ\Publish\API\Repository\ContentReviewService;
 use eZ\Publish\API\Repository\Repository as RepositoryInterface;
 use eZ\Publish\API\Repository\Values\ValueObject;
 use eZ\Publish\API\Repository\Values\User\UserReference;
@@ -145,6 +146,13 @@ class Repository implements RepositoryInterface
     protected $notificationService;
 
     /**
+     * Instance of Notification service.
+     *
+     * @var \eZ\Publish\API\Repository\ContentReviewService
+     */
+    protected $contentReviewService;
+
+    /**
      * Constructor.
      *
      * Construct repository object from aggregated repository and signal
@@ -166,8 +174,9 @@ class Repository implements RepositoryInterface
      * @param \eZ\Publish\Core\SignalSlot\LocationService $locationService
      * @param \eZ\Publish\Core\SignalSlot\LanguageService $languageService
      * @param \eZ\Publish\Core\SignalSlot\URLService $urlService
-     * @param \eZ\Publish\Core\SignalSlot\BookmarkService $bookmarkService
-     * @param \eZ\Publish\API\Repository\NotificationService $notificationService
+     * @param \eZ\Publish\Core\Repository\BookmarkService $bookmarkService
+     * @param \eZ\Publish\Core\SignalSlot\NotificationService $notificationService
+     * @param \eZ\Publish\Core\Repository\ContentReviewService $contentReviewService
      */
     public function __construct(
         RepositoryInterface $repository,
@@ -187,7 +196,8 @@ class Repository implements RepositoryInterface
         LanguageService $languageService,
         URLService $urlService,
         BookmarkService $bookmarkService,
-        NotificationService $notificationService
+        NotificationService $notificationService,
+        ContentReviewService $contentReviewService
     ) {
         $this->signalDispatcher = $signalDispatcher;
         $this->repository = $repository;
@@ -207,6 +217,7 @@ class Repository implements RepositoryInterface
         $this->urlService = $urlService;
         $this->bookmarkService = $bookmarkService;
         $this->notificationService = $notificationService;
+        $this->contentReviewService = $contentReviewService;
     }
 
     /**
@@ -448,6 +459,16 @@ class Repository implements RepositoryInterface
     public function getNotificationService()
     {
         return $this->notificationService;
+    }
+
+    /**
+     * Get ContentReviewService.
+     *
+     * @return \eZ\Publish\Core\Repository\ContentReviewService
+     */
+    public function getContentReviewService()
+    {
+        return $this->contentReviewService;
     }
 
     /**
