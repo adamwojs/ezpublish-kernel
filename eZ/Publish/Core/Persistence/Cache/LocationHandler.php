@@ -316,6 +316,20 @@ class LocationHandler extends AbstractHandler implements LocationHandlerInterfac
     }
 
     /**
+     * Returns true if given location is a tree root.
+     *
+     * @param \eZ\Publish\SPI\Persistence\Content\Location $location
+     *
+     * @return bool
+     */
+    public function isRootLocation(Location $location): bool
+    {
+        $this->logger->logCall(__METHOD__, array('locationId' => $location->id));
+
+        return $this->persistenceHandler->locationHandler()->isRootLocation($location);
+    }
+
+    /**
      * Return relevant content and location tags so cache can be purged reliably.
      *
      * @param \eZ\Publish\SPI\Persistence\Content\Location $location

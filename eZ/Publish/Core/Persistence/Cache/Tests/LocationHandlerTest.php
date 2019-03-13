@@ -44,6 +44,7 @@ class LocationHandlerTest extends AbstractCacheHandlerTest
             ['removeSubtree', [12], ['location-path-12']],
             ['setSectionForSubtree', [12, 2], ['location-path-12']],
             ['changeMainLocation', [4, 12], ['content-4']],
+            ['isRootLocation', [new Location(['id' => 1])], [], null, true],
         ];
     }
 

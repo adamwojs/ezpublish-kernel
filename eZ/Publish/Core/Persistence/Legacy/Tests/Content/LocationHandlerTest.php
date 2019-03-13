@@ -678,6 +678,22 @@ class LocationHandlerTest extends TestCase
     }
 
     /**
+     * Test for the isRootLocation() method.
+     *
+     * @covers \eZ\Publish\Core\Persistence\Legacy\Content\Location\Handler::isRootLocation()
+     */
+    public function testIsRootLocation()
+    {
+        $handler = $this->getLocationHandler();
+
+        $root = new Location(['id' => 1]);
+        $leaf = new Location(['id' => 33]);
+
+        $this->assertTrue($handler->isRootLocation($root));
+        $this->assertFalse($handler->isRootLocation($leaf));
+    }
+    
+    /**
      * Returns the handler to test with $methods mocked.
      *
      * @param string[] $methods

@@ -452,28 +452,8 @@ class DomainMapper
         array $prioritizedLanguages = [],
         bool $useAlwaysAvailable = true
     ): APILocation {
-        if ($spiLocation->id == 1) {
-            $legacyDateTime = $this->getDateTime(1030968000); //  first known commit of eZ Publish 3.x
-            // NOTE: this is hardcoded workaround for missing ContentInfo on root location
-            return $this->mapLocation(
-                $spiLocation,
-                new ContentInfo([
-                    'id' => 0,
-                    'name' => 'Top Level Nodes',
-                    'sectionId' => 1,
-                    'mainLocationId' => 1,
-                    'contentTypeId' => 1,
-                    'currentVersionNo' => 1,
-                    'published' => 1,
-                    'ownerId' => 14, // admin user
-                    'modificationDate' => $legacyDateTime,
-                    'publishedDate' => $legacyDateTime,
-                    'alwaysAvailable' => 1,
-                    'remoteId' => null,
-                    'mainLanguageCode' => 'eng-GB',
-                ]),
-                new Content([])
-            );
+        if ($this->locationHandler->isRootLocation($spiLocation)) {
+            return $this->buildRootLocation($spiLocation);
         }
 
         $spiContentInfo = $this->contentHandler->loadContentInfo($spiLocation->contentId);
@@ -485,11 +465,28 @@ class DomainMapper
         );
     }
 
+    /**
+     * @param \eZ\Publish\SPI\Persistence\Content\Location $spiLocation
+     * @param \eZ\Publish\API\Repository\Values\Content\Content|null $content
+     * @param \eZ\Publish\SPI\Persistence\Content\ContentInfo|null $spiContentInfo
+     *
+     * @return \eZ\Publish\API\Repository\Values\Content\Location
+     *
+     * @throws \eZ\Publish\Core\Base\Exceptions\InvalidArgumentException
+     */
     public function buildLocationWithContent(
         SPILocation $spiLocation,
-        APIContent $content,
-        SPIContentInfo $spiContentInfo = null
+        ?APIContent $content,
+        ?SPIContentInfo $spiContentInfo = null
     ): APILocation {
+        if ($this->locationHandler->isRootLocation($spiLocation)) {
+            return $this->buildRootLocation($spiLocation);
+        }
+
+        if ($content === null) {
+            throw new InvalidArgumentException('$content', "Location {$spiLocation->id} has missing Content");
+        }
+
         if ($spiContentInfo !== null) {
             $contentInfo = $this->buildContentInfoDomainObject($spiContentInfo);
         } else {
@@ -497,6 +494,40 @@ class DomainMapper
         }
 
         return $this->mapLocation($spiLocation, $contentInfo, $content);
+    }
+
+    /**
+     * Builds API Location object for tree root.
+     *
+     * @param \eZ\Publish\SPI\Persistence\Content\Location $spiLocation
+     *
+     * @return \eZ\Publish\API\Repository\Values\Content\Location
+     */
+    private function buildRootLocation(SPILocation $spiLocation): APILocation
+    {
+        //  first known commit of eZ Publish 3.x
+        $legacyDateTime = $this->getDateTime(1030968000);
+
+        // NOTE: this is hardcoded workaround for missing ContentInfo on root location
+        return $this->mapLocation(
+            $spiLocation,
+            new ContentInfo([
+                'id' => 0,
+                'name' => 'Top Level Nodes',
+                'sectionId' => 1,
+                'mainLocationId' => 1,
+                'contentTypeId' => 1,
+                'currentVersionNo' => 1,
+                'published' => 1,
+                'ownerId' => 14, // admin user
+                'modificationDate' => $legacyDateTime,
+                'publishedDate' => $legacyDateTime,
+                'alwaysAvailable' => 1,
+                'remoteId' => null,
+                'mainLanguageCode' => 'eng-GB',
+            ]),
+            new Content([])
+        );
     }
 
     private function mapLocation(SPILocation $spiLocation, ContentInfo $contentInfo, APIContent $content): APILocation
