@@ -692,7 +692,7 @@ class LocationHandlerTest extends TestCase
         $this->assertTrue($handler->isRootLocation($root));
         $this->assertFalse($handler->isRootLocation($leaf));
     }
-    
+
     /**
      * Returns the handler to test with $methods mocked.
      *
