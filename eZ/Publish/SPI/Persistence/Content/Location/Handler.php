@@ -214,13 +214,4 @@ interface Handler
      * @return \eZ\Publish\SPI\Persistence\Content\Location[]
      */
     public function loadAllLocations($offset, $limit);
-
-    /**
-     * Returns true if given location is a tree root.
-     *
-     * @param \eZ\Publish\SPI\Persistence\Content\Location $location
-     *
-     * @return bool
-     */
-    public function isRootLocation(Location $location): bool;
 }

@@ -25,8 +25,6 @@ use eZ\Publish\SPI\Persistence\Content\MetadataUpdateStruct;
  */
 class Handler implements BaseLocationHandler
 {
-    private const ROOT_LOCATION_ID = 1;
-
     /**
      * Gateway for handling location data.
      *
@@ -540,17 +538,5 @@ class Handler implements BaseLocationHandler
         $rows = $this->locationGateway->loadAllLocationsData($offset, $limit);
 
         return $this->locationMapper->createLocationsFromRows($rows);
-    }
-
-    /**
-     * Returns true if given location is a tree root.
-     *
-     * @param \eZ\Publish\SPI\Persistence\Content\Location $location
-     *
-     * @return bool
-     */
-    public function isRootLocation(Location $location): bool
-    {
-        return self::ROOT_LOCATION_ID === (int)$location->id;
     }
 }

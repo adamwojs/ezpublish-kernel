@@ -44,6 +44,8 @@ use DateTime;
  */
 class DomainMapper
 {
+    const ROOT_LOCATION_ID = 1;
+
     const MAX_LOCATION_PRIORITY = 2147483647;
     const MIN_LOCATION_PRIORITY = -2147483648;
 
@@ -452,7 +454,7 @@ class DomainMapper
         array $prioritizedLanguages = [],
         bool $useAlwaysAvailable = true
     ): APILocation {
-        if ($this->locationHandler->isRootLocation($spiLocation)) {
+        if ($this->isRootLocation($spiLocation)) {
             return $this->buildRootLocation($spiLocation);
         }
 
@@ -472,14 +474,14 @@ class DomainMapper
      *
      * @return \eZ\Publish\API\Repository\Values\Content\Location
      *
-     * @throws \eZ\Publish\Core\Base\Exceptions\InvalidArgumentException
+     * @throws \eZ\Publish\API\Repository\Exceptions\InvalidArgumentException
      */
     public function buildLocationWithContent(
         SPILocation $spiLocation,
         ?APIContent $content,
         ?SPIContentInfo $spiContentInfo = null
     ): APILocation {
-        if ($this->locationHandler->isRootLocation($spiLocation)) {
+        if ($this->isRootLocation($spiLocation)) {
             return $this->buildRootLocation($spiLocation);
         }
 
@@ -835,5 +837,17 @@ class DomainMapper
     public function getUniqueHash($object)
     {
         return md5(uniqid(get_class($object), true));
+    }
+
+    /**
+     * Returns true if given location is a tree root.
+     *
+     * @param \eZ\Publish\SPI\Persistence\Content\Location $spiLocation
+     *
+     * @return bool
+     */
+    private function isRootLocation(SPILocation $spiLocation): bool
+    {
+        return self::ROOT_LOCATION_ID === (int)$spiLocation->id;
     }
 }
