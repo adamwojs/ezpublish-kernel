@@ -53,7 +53,7 @@ class Converter implements ConverterInterface
     public function toStorageFieldDefinition(FieldDefinition $fieldDef, StorageFieldDefinition $storageDef)
     {
         if ($this->settingsClass === null) {
-            return ;
+            return;
         }
 
         $settings = $fieldDef->fieldTypeConstraints->fieldSettings;
@@ -67,13 +67,13 @@ class Converter implements ConverterInterface
     public function toFieldDefinition(StorageFieldDefinition $storageDef, FieldDefinition $fieldDef)
     {
         if ($this->settingsClass === null) {
-            return ;
+            return;
         }
 
         $settings = $storageDef->dataText5;
         if ($settings !== null) {
             $settings = new FieldSettings([
-                'settings' => $this->serializer->deserialize($settings, $this->settingsClass, 'json')
+                'settings' => $this->serializer->deserialize($settings, $this->settingsClass, 'json'),
             ]);
         }
 

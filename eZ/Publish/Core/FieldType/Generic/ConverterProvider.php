@@ -12,7 +12,6 @@ use eZ\Publish\Core\Persistence\FieldTypeRegistry;
 use eZ\Publish\Core\Persistence\Legacy\Content\FieldValue\Converter\Exception\NotFound;
 use eZ\Publish\Core\Persistence\Legacy\Content\FieldValue\ConverterRegistryInterface;
 use eZ\Publish\Core\FieldType\Generic\Type as GenericType;
-use eZ\Publish\Core\FieldType\Generic\Converter as GenericConverter;
 use eZ\Publish\Core\Persistence\Legacy\Content\FieldValue\Converter;
 
 class ConverterProvider implements ConverterRegistryInterface

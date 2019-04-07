@@ -38,11 +38,6 @@ abstract class Type extends FieldType
         $this->validator = $validator;
     }
 
-    public function getName(SPIValue $value)
-    {
-        throw new \RuntimeException('Name generation provided via NameableField set via "ezpublish.fieldType.nameable" service tag');
-    }
-
     public function getEmptyValue()
     {
         $class = $this->getValueClass();

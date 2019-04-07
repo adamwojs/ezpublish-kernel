@@ -33,15 +33,10 @@ abstract class Type extends FieldType
             $this->settingsSchema = [
                 'settings' => [
                     'type' => $settingsClass,
-                    'default' => new $settingsClass,
-                ]
+                    'default' => new $settingsClass(),
+                ],
             ];
         }
-    }
-
-    public function getName(SPIValue $value): string
-    {
-        throw new \RuntimeException('Name generation provided via NameableField set via "ezpublish.fieldType.nameable" service tag');
     }
 
     public function getEmptyValue()
@@ -122,7 +117,7 @@ abstract class Type extends FieldType
 
     protected function getValueClass(): string
     {
-        $typeFQN  = get_called_class();
+        $typeFQN = get_called_class();
         $valueFQN = substr_replace($typeFQN, 'Value', strrpos($typeFQN, '\\') + 1);
 
         return $valueFQN;
@@ -145,6 +140,6 @@ abstract class Type extends FieldType
     protected function checkValueStructure(BaseValue $value)
     {
         // Value is self-contained and strong typed
-        return ;
+        return;
     }
 }

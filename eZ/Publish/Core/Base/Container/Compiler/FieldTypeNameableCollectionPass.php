@@ -69,8 +69,12 @@ class FieldTypeNameableCollectionPass implements CompilerPassInterface
                     continue;
                 }
 
+                if (!$this->isImplementNameable($container, $id)) {
+                    continue;
+                }
+
                 $fieldTypeCollectionFactoryDef->addMethodCall(
-                    $this->isImplementNameable($container, $id) ? 'registerNameableFieldType' : 'registerNonNameableFieldType',
+                    'registerNameableFieldType',
                     [
                         // Only pass the service Id since field types will be lazy loaded via the service container
                         $id,
