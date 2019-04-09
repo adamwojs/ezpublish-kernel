@@ -64,21 +64,6 @@ abstract class Type extends FieldType
         return $this->serializer->normalize($value, 'json');
     }
 
-    public function fieldSettingsFromHash($fieldSettingsHash)
-    {
-//        if (isset($fieldSettingsHash['settings'])) {
-//            $fieldSettingsHash['settings'] = $this->serializer->denormalize($fieldSettingsHash, $this->getSettingsClass(), 'json');
-//        }
-
-        return $fieldSettingsHash;
-    }
-
-    public function fieldSettingsToHash($fieldSettings)
-    {
-        //$fieldSettings['settings'] = $this->serializer->normalize($fieldSettings, 'json');
-        return $fieldSettings;
-    }
-
     public function validate(FieldDefinition $fieldDefinition, SPIValue $value)
     {
         $validationErrors = [];
@@ -97,6 +82,11 @@ abstract class Type extends FieldType
         return $validationErrors;
     }
 
+    public function getSettingsClass(): ?string
+    {
+        return null;
+    }
+
     public function validateFieldSettings($fieldSettings)
     {
         if ($this->getSettingsClass() === null) {
@@ -112,20 +102,27 @@ abstract class Type extends FieldType
             ];
         }
 
-        return [];
+        $validationErrors = [];
+
+        /** @var \Symfony\Component\Validator\ConstraintViolationInterface $error */
+        foreach ($this->validator->validate($fieldSettings['settings']) as $error) {
+            $validationErrors[] = new ValidationError(
+                $error->getMessageTemplate(),
+                null,
+                $error->getParameters(),
+                $error->getPropertyPath()
+            );
+        }
+
+        return $validationErrors;
     }
 
     protected function getValueClass(): string
     {
-        $typeFQN = get_called_class();
+        $typeFQN  = get_called_class();
         $valueFQN = substr_replace($typeFQN, 'Value', strrpos($typeFQN, '\\') + 1);
 
         return $valueFQN;
-    }
-
-    public function getSettingsClass(): ?string
-    {
-        return null;
     }
 
     protected function createValueFromInput($inputValue)
