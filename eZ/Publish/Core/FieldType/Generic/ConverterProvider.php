@@ -64,9 +64,7 @@ class ConverterProvider implements ConverterRegistryInterface
 
         $fieldType = $this->fieldTypeRegistry->getCoreFieldType($typeName);
         if ($this->isGenericFieldType($typeName)) {
-            $converter = $this->converterFactory->createForFieldType(
-                $fieldType->getSettingsClass()
-            );
+            $converter = $this->converterFactory->createForFieldType();
 
             // Register and return default converter
             $this->innerRegistry->register($typeName, $converter);

@@ -109,7 +109,7 @@ class Storage extends GatewayBasedStorage
         return false;
     }
 
-    protected function findEntity(VersionInfo $versionInfo, int $fieldId)
+    protected function findEntity(VersionInfo $versionInfo, $fieldId)
     {
         return $this->em->getRepository($this->entityClass)->findOneBy([
             'fieldId' => $fieldId,
@@ -120,12 +120,12 @@ class Storage extends GatewayBasedStorage
     /**
      * @param \eZ\Publish\SPI\Persistence\Content\VersionInfo $versionInfo
      * @param \eZ\Publish\SPI\Persistence\Content\Field $field
-     * @param \eZ\Publish\Core\FieldType\GenericEntity\Doctrine\Behavior\AssociableWithContent $entity
+     * @param $entity
      */
     protected function setFieldAssociation(
         VersionInfo $versionInfo,
         Field $field,
-        AssociableWithContent $entity
+        $entity
     ): void {
         $entity->setFieldId($field->id);
         $entity->setVersionNo($versionInfo->versionNo);

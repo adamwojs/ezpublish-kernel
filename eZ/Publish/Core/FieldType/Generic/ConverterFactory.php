@@ -19,6 +19,6 @@ class ConverterFactory
 
     public function createForFieldType(?string $settingsClass = null): ConverterInterface
     {
-        return new Converter($this->serializer, $settingsClass);
+        return new Converter($this->serializer);
     }
 }

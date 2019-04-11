@@ -14,6 +14,8 @@ use eZ\Publish\Core\FieldType\ValidationError;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 use eZ\Publish\SPI\FieldType\Value as SPIValue;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 abstract class Type extends FieldType
@@ -28,15 +30,6 @@ abstract class Type extends FieldType
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
-
-        if (($settingsClass = $this->getSettingsClass()) !== null) {
-            $this->settingsSchema = [
-                'settings' => [
-                    'type' => $settingsClass,
-                    'default' => new $settingsClass(),
-                ],
-            ];
-        }
     }
 
     public function getEmptyValue()
@@ -66,30 +59,14 @@ abstract class Type extends FieldType
 
     public function validate(FieldDefinition $fieldDefinition, SPIValue $value)
     {
-        $validationErrors = [];
-
-        $errors = $this->validator->validate($value);
-        /** @var \Symfony\Component\Validator\ConstraintViolationInterface $error */
-        foreach ($errors as $error) {
-            $validationErrors[] = new ValidationError(
-                $error->getMessageTemplate(),
-                null,
-                $error->getParameters(),
-                $error->getPropertyPath()
-            );
-        }
-
-        return $validationErrors;
-    }
-
-    public function getSettingsClass(): ?string
-    {
-        return null;
+        return $this->mapConstraintViolationList(
+            $this->validator->validate($value)
+        );
     }
 
     public function validateFieldSettings($fieldSettings)
     {
-        if ($this->getSettingsClass() === null) {
+        if (empty($fieldSettings)) {
             return [
                 new ValidationError(
                     "FieldType '%fieldType%' does not accept settings",
@@ -102,19 +79,31 @@ abstract class Type extends FieldType
             ];
         }
 
-        $validationErrors = [];
+        return $this->mapConstraintViolationList(
+            $this->validator->validate($fieldSettings, $this->getFieldSettingsConstraints())
+        );
+    }
 
-        /** @var \Symfony\Component\Validator\ConstraintViolationInterface $error */
-        foreach ($this->validator->validate($fieldSettings['settings']) as $error) {
-            $validationErrors[] = new ValidationError(
-                $error->getMessageTemplate(),
+    protected function getFieldSettingsConstraints(): ?Assert\Collection
+    {
+        return null;
+    }
+    
+    protected function mapConstraintViolationList(ConstraintViolationListInterface $constraintViolationList): array
+    {
+        $errors = [];
+
+        /** @var \Symfony\Component\Validator\ConstraintViolationInterface $constraintViolation */
+        foreach ($constraintViolationList as $constraintViolation) {
+            $errors[] = new ValidationError(
+                $constraintViolation->getMessageTemplate(),
                 null,
-                $error->getParameters(),
-                $error->getPropertyPath()
+                $constraintViolation->getParameters(),
+                $constraintViolation->getPropertyPath()
             );
         }
 
-        return $validationErrors;
+        return $errors;
     }
 
     protected function getValueClass(): string
