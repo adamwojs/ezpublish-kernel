@@ -1301,6 +1301,7 @@ class ContentTypeService implements ContentTypeServiceInterface
         $validationErrors = $this->validateFieldDefinitionCreateStruct($fieldDefinitionCreateStruct, $fieldType);
         if (!empty($validationErrors)) {
             $validationErrors = array($fieldDefinitionCreateStruct->identifier => $validationErrors);
+            dump($validationErrors);
             throw new ContentTypeFieldDefinitionValidationException($validationErrors);
         }
 
