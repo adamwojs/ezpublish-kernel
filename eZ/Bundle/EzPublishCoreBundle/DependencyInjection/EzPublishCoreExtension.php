@@ -243,6 +243,7 @@ class EzPublishCoreExtension extends Extension implements PrependExtensionInterf
 
         // Register siteaccess groups + reverse
         $container->setParameter('ezpublish.siteaccess.groups', $config['siteaccess']['groups']);
+        ConfigurationProcessor::setAvailableSiteAccessGroups($config['siteaccess']['groups']);
         $groupsBySiteaccess = array();
         foreach ($config['siteaccess']['groups'] as $groupName => $groupMembers) {
             foreach ($groupMembers as $member) {
