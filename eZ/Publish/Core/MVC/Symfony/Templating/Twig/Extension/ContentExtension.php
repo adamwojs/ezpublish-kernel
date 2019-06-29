@@ -12,7 +12,6 @@ use eZ\Publish\API\Repository\Repository;
 use eZ\Publish\API\Repository\Values\Content\ContentInfo;
 use eZ\Publish\API\Repository\Values\ValueObject;
 use eZ\Publish\Core\Base\Exceptions\InvalidArgumentType;
-use eZ\Publish\Core\Base\Exceptions\InvalidArgumentValue;
 use eZ\Publish\Core\Helper\FieldHelper;
 use eZ\Publish\Core\Helper\TranslationHelper;
 use eZ\Publish\API\Repository\Values\Content\Content;
@@ -27,24 +26,16 @@ use Twig\TwigFunction;
  */
 class ContentExtension extends AbstractExtension
 {
-    /**
-     * @var \eZ\Publish\API\Repository\Repository
-     */
+    /** @var \eZ\Publish\API\Repository\Repository */
     protected $repository;
 
-    /**
-     * @var \eZ\Publish\Core\Helper\TranslationHelper
-     */
+    /** @var \eZ\Publish\Core\Helper\TranslationHelper */
     protected $translationHelper;
 
-    /**
-     * @var \eZ\Publish\Core\Helper\FieldHelper
-     */
+    /** @var \eZ\Publish\Core\Helper\FieldHelper */
     protected $fieldHelper;
 
-    /**
-     * @var LoggerInterface
-     */
+    /** @var LoggerInterface */
     protected $logger;
 
     public function __construct(
