@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 final class GenericFieldTypeConverterPass implements CompilerPassInterface
 {
-    public const GENERIC_CONVERTER_SERVICE_ID = 'ezpublish.fieldType.ezgeneric.converter';
+    public const GENERIC_CONVERTER_SERVICE_ID = 'eZ\Publish\Core\Persistence\Legacy\Content\FieldValue\Converter\GenericConverter';
 
     public function process(ContainerBuilder $container): void
     {
@@ -43,7 +43,7 @@ final class GenericFieldTypeConverterPass implements CompilerPassInterface
     {
         $fieldTypesForAutoRegisterConverter = [];
 
-        $fieldTypeWithRegisteredConverter = $this->getFieldTypeWithRegisteredConverter($container);
+        $fieldTypeWithRegisteredConverter = $this->getFieldTypesWithRegisteredConverter($container);
         $fieldTypeServices = $this->findTaggedServiceIds($container, FieldTypeCollectionPass::FIELD_TYPE_SERVICE_TAGS);
         foreach ($fieldTypeServices as $id => $tags) {
             if (!$this->isGenericFieldType($container, $id)) {
@@ -66,13 +66,13 @@ final class GenericFieldTypeConverterPass implements CompilerPassInterface
     }
 
     /**
-     * Returns identifier.
+     * Returns Field Type identifiers.
      *
      * @param \Symfony\Component\DependencyInjection\ContainerBuilder $container
      *
      * @return string[]
      */
-    private function getFieldTypeWithRegisteredConverter(ContainerBuilder $container): array
+    private function getFieldTypesWithRegisteredConverter(ContainerBuilder $container): array
     {
         $availableFieldValueConverters = [];
 

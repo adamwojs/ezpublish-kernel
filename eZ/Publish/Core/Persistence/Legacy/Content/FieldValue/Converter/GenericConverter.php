@@ -16,7 +16,7 @@ use eZ\Publish\Core\Persistence\Legacy\Content\StorageFieldValue;
 use eZ\Publish\SPI\Persistence\Content\FieldValue;
 use eZ\Publish\SPI\Persistence\Content\Type\FieldDefinition;
 
-class GenericConverter implements ConverterInterface
+final class GenericConverter implements ConverterInterface
 {
     /** @var \eZ\Publish\Core\FieldType\Generic\ValueSerializerInterface */
     private $serializer;

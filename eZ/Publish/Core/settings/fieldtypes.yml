@@ -627,10 +627,3 @@ services:
 
     eZ\Publish\Core\FieldType\Generic\ValueSerializerInterface:
         alias: 'eZ\Publish\Core\FieldType\Generic\ValueSerializer\SymfonySerializerAdapter'
-
-    ezpublish.field_type.ezgeneric:
-        class: eZ\Publish\Core\FieldType\Generic\Type
-        abstract: true
-        arguments:
-            $serializer: '@eZ\Publish\Core\FieldType\Generic\ValueSerializerInterface'
-            $validator: '@validator'

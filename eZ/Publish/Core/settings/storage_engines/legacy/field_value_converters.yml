@@ -33,8 +33,7 @@ services:
         class: "%ezpublish.persistence.legacy.field_value_converter.registry.class%"
         lazy: true
 
-    ezpublish.fieldType.ezgeneric.converter:
-        class: eZ\Publish\Core\Persistence\Legacy\Content\FieldValue\Converter\GenericConverter
+    eZ\Publish\Core\Persistence\Legacy\Content\FieldValue\Converter\GenericConverter:
         arguments:
             $serializer: '@eZ\Publish\Core\FieldType\Generic\ValueSerializerInterface'
 
