@@ -6757,9 +6757,9 @@ XML
         $contentUpdateStruct->setField('name', 'Draft 1 DE', 'ger-DE');
 
         $contentService->updateContent($draft->versionInfo, $contentUpdateStruct);
-
         $contentService->publishVersion($draft->versionInfo, ['ger-DE']);
         $content = $contentService->loadContent($draft->contentInfo->id);
+
         $this->assertEquals(
             [
                 'eng-US' => 'Published US',

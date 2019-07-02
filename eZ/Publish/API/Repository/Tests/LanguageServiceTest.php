@@ -257,23 +257,6 @@ class LanguageServiceTest extends BaseTest
     }
 
     /**
-     * Test service method for updating language name throwing InvalidArgumentException.
-     *
-     * @covers \eZ\Publish\API\Repository\LanguageService::updateLanguageName
-     */
-    public function testUpdateLanguageNameThrowsInvalidArgumentException()
-    {
-        $this->expectException(\eZ\Publish\API\Repository\Exceptions\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument \'newName\' is invalid: \'1\' is wrong value');
-
-        $repository = $this->getRepository();
-        $languageService = $repository->getContentLanguageService();
-
-        $language = $languageService->loadLanguage('eng-GB');
-        $languageService->updateLanguageName($language, 1);
-    }
-
-    /**
      * Test for the enableLanguage() method.
      *
      * @covers \eZ\Publish\API\Repository\LanguageService::enableLanguage
