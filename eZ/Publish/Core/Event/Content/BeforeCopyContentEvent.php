@@ -49,7 +49,7 @@ final class BeforeCopyContentEvent extends BeforeEvent
         return $this->destinationLocationCreateStruct;
     }
 
-    public function getVersionInfo(): VersionInfo
+    public function getVersionInfo(): ?VersionInfo
     {
         return $this->versionInfo;
     }
