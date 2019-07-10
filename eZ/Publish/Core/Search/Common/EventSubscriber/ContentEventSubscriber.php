@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @copyright Copyright (C) eZ Systems AS. All rights reserved.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
+ */
 namespace eZ\Publish\Core\Search\Common\EventSubscriber;
 
 use eZ\Publish\Core\Event\Content\CopyContentEvent;
@@ -9,7 +13,6 @@ use eZ\Publish\Core\Event\Content\HideContentEvent;
 use eZ\Publish\Core\Event\Content\PublishVersionEvent;
 use eZ\Publish\Core\Event\Content\RevealContentEvent;
 use eZ\Publish\Core\Event\Content\UpdateContentMetadataEvent;
-use eZ\Publish\SPI\Persistence\Content\ContentInfo;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ContentEventSubscriber extends AbstractSearchEventSubscriber implements EventSubscriberInterface

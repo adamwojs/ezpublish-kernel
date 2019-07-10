@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @copyright Copyright (C) eZ Systems AS. All rights reserved.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
+ */
 namespace eZ\Publish\Core\Search\Common\EventSubscriber;
 
 use eZ\Publish\API\Repository\Values\Content\Location;
@@ -73,7 +77,7 @@ class LocationEventSubscriber extends AbstractSearchEventSubscriber implements E
             $event->getLocation2(),
         ];
 
-        array_walk($locations, function(Location $location) {
+        array_walk($locations, function (Location $location) {
             $contentInfo = $this->persistenceHandler->contentHandler()->loadContentInfo($location->contentId);
 
             $this->searchHandler->indexContent(
