@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace eZ\Publish\SPI\FieldType\Generic\Tests;
 
+use eZ\Publish\SPI\FieldType\Generic\Tests\Stubs\Value;
 use eZ\Publish\SPI\FieldType\Tests\FieldTypeTest;
 use eZ\Publish\SPI\FieldType\ValueSerializerInterface;
 use eZ\Publish\SPI\FieldType\Generic\Tests\Stubs\Type as GenericFieldTypeStub;
@@ -63,6 +64,13 @@ class GenericTest extends FieldTypeTest
             ->willReturn($constraintViolationList);
 
         parent::testValidateInvalid($fieldDefinitionData, $value, $errors);
+    }
+
+    public function testGetValueClass()
+    {
+        $fieldType = $this->createFieldTypeUnderTest();
+
+        $this->assertEquals($fieldType->getValueClass(), Value::class);
     }
 
     protected function provideFieldTypeIdentifier(): string

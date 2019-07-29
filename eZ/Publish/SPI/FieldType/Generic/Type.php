@@ -298,7 +298,7 @@ abstract class Type extends FieldType
      *
      * @return string
      */
-    protected function getValueClass(): string
+    public function getValueClass(): string
     {
         return substr_replace(static::class, 'Value', strrpos(static::class, '\\') + 1);
     }
