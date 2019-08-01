@@ -8,6 +8,8 @@
  */
 namespace eZ\Publish\Core\MVC\Symfony\Security;
 
+use DateInterval;
+use DateTime;
 use eZ\Publish\API\Repository\Values\User\User as APIUser;
 use eZ\Publish\Core\Repository\Values\User\UserReference;
 use Symfony\Component\Security\Core\User\UserInterface as BaseUserInterface;
@@ -187,7 +189,17 @@ class User implements ReferenceUserInterface, EquatableInterface
      */
     public function isCredentialsNonExpired()
     {
-        return true;
+        $passwordUpdatedAt = $this->getAPIUser()->passwordUpdatedAt;
+        if ($passwordUpdatedAt === null) {
+            return true;
+        }
+
+//        $now = new DateTime();
+//        $now->diff($passwordUpdatedAt) < new DateInterval("P30D");
+
+        //(new DateTime())->diff($passwordUpdatedAt)->days > 0;
+
+        return $passwordUpdatedAt->getTimestamp() > time();
     }
 
     /**

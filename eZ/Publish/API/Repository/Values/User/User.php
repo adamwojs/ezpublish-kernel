@@ -17,6 +17,8 @@ use eZ\Publish\API\Repository\Values\Content\Content;
  * @property-read string $email
  * @property-read string $passwordHash
  * @property-read string $hashAlgorithm Hash algorithm used to hash the password
+ * @property-read \DateTimeInterface|null $passwordUpdatedAt
+ * @property-read \DateTimeInterface|null $passwordExpiresAt
  * @property-read bool $enabled User can not login if false
  * @property-read int $maxLogin Max number of time user is allowed to login
  */
@@ -75,6 +77,20 @@ abstract class User extends Content implements UserReference
      * @var string
      */
     protected $passwordHash;
+
+    /**
+     * Datetime of last password update.
+     *
+     * @var \DateTimeInterface|null
+     */
+    protected $passwordUpdatedAt;
+
+    /**
+     * Datetime when the password expires.
+     *
+     * @var \DateTimeInterface|null
+     */
+    protected $passwordExpiresAt;
 
     /**
      * Hash algorithm used to hash the password.

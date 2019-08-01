@@ -28,6 +28,18 @@ class Type extends FieldType
     protected $userHandler;
 
     /** @var array */
+    protected $settingsSchema = [
+        'PasswordExpireAfter' => [
+            'type' => 'int',
+            'default' => -1
+        ],
+        'PasswordWarnBefore' => [
+            'type' => 'int',
+            'default' => -1
+        ]
+    ];
+
+    /** @var array */
     protected $validatorConfigurationSchema = [
         'PasswordValueValidator' => [
             'requireAtLeastOneUpperCaseCharacter' => [
@@ -293,5 +305,14 @@ class Type extends FieldType
         }
 
         return $validationErrors;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validateFieldSettings($fieldSettings)
+    {
+        // TODO: Settings validation
+        return [];
     }
 }

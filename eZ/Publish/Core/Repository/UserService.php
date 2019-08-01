@@ -9,6 +9,8 @@
 namespace eZ\Publish\Core\Repository;
 
 use Exception;
+use DateTime;
+use DateTimeInterface;
 use eZ\Publish\API\Repository\Repository as RepositoryInterface;
 use eZ\Publish\API\Repository\UserService as UserServiceInterface;
 use eZ\Publish\API\Repository\Values\Content\Content as APIContent;
@@ -1346,6 +1348,7 @@ class UserService implements UserServiceInterface
                 'login' => $spiUser->login,
                 'email' => $spiUser->email,
                 'passwordHash' => $spiUser->passwordHash,
+                'passwordUpdatedAt' => $spiUser->passwordUpdatedAt ? $this->getDateTime((int)$spiUser->passwordUpdatedAt) : null,
                 'hashAlgorithm' => (int)$spiUser->hashAlgorithm,
                 'enabled' => $spiUser->isEnabled,
                 'maxLogin' => (int)$spiUser->maxLogin,
@@ -1447,5 +1450,14 @@ class UserService implements UserServiceInterface
             !empty($userUpdateStruct->email) ||
             !empty($userUpdateStruct->enabled) ||
             !empty($userUpdateStruct->maxLogin);
+    }
+
+    private function getDateTime(int $timestamp): DateTimeInterface
+    {
+        // Instead of using DateTime(ts) we use setTimeStamp() so timezone does not get set to UTC
+        $dateTime = new DateTime();
+        $dateTime->setTimestamp($timestamp);
+
+        return $dateTime;
     }
 }
