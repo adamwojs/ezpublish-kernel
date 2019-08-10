@@ -130,6 +130,7 @@ class DoctrineDatabase extends Gateway
             $this->handler->quoteColumn('email', 'ezuser'),
             $this->handler->quoteColumn('password_hash', 'ezuser'),
             $this->handler->quoteColumn('password_hash_type', 'ezuser'),
+            $this->handler->quoteColumn('password_updated_at', 'ezuser'),
             $this->handler->quoteColumn('is_enabled', 'ezuser_setting'),
             $this->handler->quoteColumn('max_login', 'ezuser_setting')
         )->from(
@@ -169,6 +170,7 @@ class DoctrineDatabase extends Gateway
             $this->handler->quoteColumn('email', 'ezuser'),
             $this->handler->quoteColumn('password_hash', 'ezuser'),
             $this->handler->quoteColumn('password_hash_type', 'ezuser'),
+            $this->handler->quoteColumn('password_updated_at', 'ezuser'),
             $this->handler->quoteColumn('is_enabled', 'ezuser_setting'),
             $this->handler->quoteColumn('max_login', 'ezuser_setting')
         )->from(
@@ -209,6 +211,7 @@ class DoctrineDatabase extends Gateway
             $this->handler->quoteColumn('email', 'ezuser'),
             $this->handler->quoteColumn('password_hash', 'ezuser'),
             $this->handler->quoteColumn('password_hash_type', 'ezuser'),
+            $this->handler->quoteColumn('password_updated_at', 'ezuser'),
             $this->handler->quoteColumn('is_enabled', 'ezuser_setting'),
             $this->handler->quoteColumn('max_login', 'ezuser_setting')
         )->from(
@@ -248,6 +251,7 @@ class DoctrineDatabase extends Gateway
             $this->handler->quoteColumn('email', 'ezuser'),
             $this->handler->quoteColumn('password_hash', 'ezuser'),
             $this->handler->quoteColumn('password_hash_type', 'ezuser'),
+            $this->handler->quoteColumn('password_updated_at', 'ezuser'),
             $this->handler->quoteColumn('is_enabled', 'ezuser_setting'),
             $this->handler->quoteColumn('max_login', 'ezuser_setting')
         )->from(
