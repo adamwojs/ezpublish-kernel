@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * @copyright Copyright (C) eZ Systems AS. All rights reserved.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
+ */
+declare(strict_types=1);
+
+namespace eZ\Publish\Core\MVC\Symfony\FieldType\User;
+
+use DateTime;
+use eZ\Publish\API\Repository\UserService;
+use eZ\Publish\API\Repository\Values\Content\Field;
+use eZ\Publish\Core\MVC\Symfony\FieldType\View\ParameterProviderInterface;
+
+class ParameterProvider implements ParameterProviderInterface
+{
+    /** @var \eZ\Publish\API\Repository\UserService */
+    private $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
+    public function getViewParameters(Field $field): array
+    {
+        $user = $this->userService->loadUser($field->value->contentId);
+
+        $passwordExpiresIn = null;
+        if ($user->passwordExpiresAt !== null) {
+            $passwordExpiresIn = (new DateTime())->diff($user->passwordExpiresAt);
+        }
+
+        return [
+            'is_password_expired' => $user->isPasswordExpired(),
+            'password_expires_at' => $user->passwordExpiresAt,
+            'password_expires_in' => $passwordExpiresIn,
+        ];
+    }
+}

@@ -189,12 +189,7 @@ class User implements ReferenceUserInterface, EquatableInterface
      */
     public function isCredentialsNonExpired()
     {
-        $passwordExpiresAt = $this->getAPIUser()->passwordExpiresAt;
-        if ($passwordExpiresAt === null) {
-            return true;
-        }
-
-        return $passwordExpiresAt->getTimestamp() > time();
+        return !$this->getAPIUser()->isPasswordExpired();
     }
 
     /**

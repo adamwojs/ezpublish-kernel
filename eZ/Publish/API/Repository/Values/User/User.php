@@ -8,6 +8,7 @@
  */
 namespace eZ\Publish\API\Repository\Values\User;
 
+use DateTime;
 use DateTimeInterface;
 use eZ\Publish\API\Repository\Values\Content\Content;
 
@@ -89,7 +90,7 @@ abstract class User extends Content implements UserReference
     /**
      * Datetime when the password expires.
      *
-     * @var DateTimeInterface|null
+     * @var \DateTimeInterface|null
      */
     protected $passwordExpiresAt;
 
@@ -127,5 +128,19 @@ abstract class User extends Content implements UserReference
     public function getUserId()
     {
         return $this->id;
+    }
+
+    /**
+     * Returns true if password is expired.
+     *
+     * @return bool
+     */
+    public function isPasswordExpired(): bool
+    {
+        if ($this->passwordExpiresAt !== null) {
+            return $this->passwordExpiresAt < new DateTime();
+        }
+
+        return false;
     }
 }

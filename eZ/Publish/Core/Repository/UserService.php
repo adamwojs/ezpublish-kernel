@@ -17,7 +17,6 @@ use Exception;
 use eZ\Publish\API\Repository\Repository as RepositoryInterface;
 use eZ\Publish\API\Repository\UserService as UserServiceInterface;
 use eZ\Publish\API\Repository\Values\Content\Content as APIContent;
-use eZ\Publish\API\Repository\Values\Content\Field;
 use eZ\Publish\API\Repository\Values\Content\Location;
 use eZ\Publish\API\Repository\Values\Content\LocationQuery;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\ContentTypeId as CriterionContentTypeId;
@@ -47,7 +46,6 @@ use eZ\Publish\Core\Repository\Values\User\User;
 use eZ\Publish\Core\Repository\Values\User\UserCreateStruct;
 use eZ\Publish\Core\Repository\Values\User\UserGroup;
 use eZ\Publish\Core\Repository\Values\User\UserGroupCreateStruct;
-use eZ\Publish\SPI\Persistence\Content\FieldValue;
 use eZ\Publish\SPI\Persistence\Content\Location\Handler as LocationHandler;
 use eZ\Publish\SPI\Persistence\User as SPIUser;
 use eZ\Publish\SPI\Persistence\User\Handler;
@@ -477,7 +475,7 @@ class UserService implements UserServiceInterface
                             $this->settings['hashType']
                         ),
                         'hashAlgorithm' => $this->settings['hashType'],
-                        'passwordUpdateAt' => time(),
+                        'passwordUpdatedAt' => time(),
                         'isEnabled' => $userCreateStruct->enabled,
                         'maxLogin' => 0,
                     ]
@@ -522,6 +520,7 @@ class UserService implements UserServiceInterface
             $spiUser->email = $value->email;
             $spiUser->hashAlgorithm = $value->passwordHashType;
             $spiUser->passwordHash = $value->passwordHash;
+            $spiUser->passwordUpdatedAt = $value->passwordUpdatedAt;
             $spiUser->isEnabled = $value->enabled;
             $spiUser->maxLogin = $value->maxLogin;
             break;
@@ -1331,7 +1330,7 @@ class UserService implements UserServiceInterface
         );
     }
 
-    private function getPasswordExpiryDate(?DateTimeInterface $passwordUpdateAt, APIContent $content): ?DateTimeInterface
+    private function getPasswordExpiryDate(?DateTimeInterface $passwordUpdatedAt, APIContent $content): ?DateTimeInterface
     {
         $userFieldDefinition = $this->getUserFieldDefinition($content->getContentType());
         if (!$userFieldDefinition) {
@@ -1339,12 +1338,12 @@ class UserService implements UserServiceInterface
         }
 
         $passwordExpireAfter = $userFieldDefinition->fieldSettings['PasswordExpireAfter'] ?? -1;
-        if ($passwordUpdateAt instanceof DateTimeInterface && $passwordExpireAfter > 0) {
-            if ($passwordUpdateAt instanceof DateTime) {
-                $passwordUpdateAt = clone $passwordUpdateAt;
+        if ($passwordUpdatedAt instanceof DateTimeInterface && $passwordExpireAfter > 0) {
+            if ($passwordUpdatedAt instanceof DateTime) {
+                $passwordUpdatedAt = clone $passwordUpdatedAt;
             }
 
-            return $passwordUpdateAt->add(new DateInterval(sprintf("P%dD", $passwordExpireAfter)));
+            return $passwordUpdatedAt->add(new DateInterval(sprintf("P%dD", $passwordExpireAfter)));
         }
 
         return null;

@@ -10,6 +10,8 @@ namespace eZ\Publish\Core\Repository\Values\User;
 
 use eZ\Publish\API\Repository\Values\User\User as APIUser;
 use eZ\Publish\API\Repository\Values\ContentType\ContentType;
+use eZ\Publish\Core\Base\Exceptions\BadStateException;
+use eZ\Publish\Core\FieldType\User\Value as UserAccount;
 
 /**
  * This class represents a user value.

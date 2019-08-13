@@ -104,7 +104,7 @@ class DoctrineStorage extends Gateway
                 'cast' => 'strval',
             ],
             'password_updated_at' => [
-                'name' => 'passwordUpdateAt',
+                'name' => 'passwordUpdatedAt',
                 'cast' => function($timestamp) {
                     return $timestamp ? (int)$timestamp : null;
                 }
