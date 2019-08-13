@@ -8,6 +8,10 @@
  */
 namespace eZ\Publish\Core\FieldType\User;
 
+use DateInterval;
+use DateTime;
+use DateTimeInterface;
+use eZ\Publish\API\Repository\Values\ContentType\FieldDefinition;
 use eZ\Publish\Core\FieldType\Value as BaseValue;
 
 /**
@@ -58,6 +62,11 @@ class Value extends BaseValue
     public $passwordHashType;
 
     /**
+     * @var \DateTimeImmutable|null
+     */
+    public $passwordUpdateAt;
+
+    /**
      * Is enabled.
      *
      * @var bool
@@ -70,6 +79,51 @@ class Value extends BaseValue
      * @var int
      */
     public $maxLogin;
+
+    public function __construct(array $properties = [])
+    {
+        $passwordUpdateAt = $properties['passwordUpdateAt'] ?? null;
+        if ($passwordUpdateAt !== null) {
+            $dateTime = new DateTime();
+            $dateTime->setTimestamp($passwordUpdateAt);
+
+            $this->passwordUpdateAt = $dateTime;
+
+            unset($properties['passwordUpdateAt']);
+        }
+
+        parent::__construct($properties);
+    }
+
+    public function hasPasswordExpiresDate(FieldDefinition $fieldDefinition): bool
+    {
+        if ($this->passwordUpdateAt instanceof DateTimeInterface) {
+            return $fieldDefinition->fieldSettings['PasswordExpireAfter'] > 0;
+        }
+
+        return false;
+    }
+
+    public function getPasswordExpiresAt(FieldDefinition $fieldDefinition): ?DateTimeInterface
+    {
+        if (!$this->hasPasswordExpiresDate($fieldDefinition)) {
+            return null;
+        }
+
+        return $this->passwordUpdateAt->add(
+            new DateInterval(sprintf("P%dD", (int)$fieldDefinition->fieldSettings['PasswordExpireAfter']))
+        );
+    }
+
+    public function isPasswordExpired(FieldDefinition $fieldDefinition): bool
+    {
+        $expiresAt = $this->getPasswordExpiresAt($fieldDefinition);
+        if ($expiresAt !== null) {
+            return $expiresAt < (new DateTime());
+        }
+
+        return false;
+    }
 
     /**
      * @see \eZ\Publish\Core\FieldType\Value
