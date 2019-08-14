@@ -28,13 +28,14 @@ class ParameterProvider implements ParameterProviderInterface
         $user = $this->userService->loadUser($field->value->contentId);
 
         $passwordExpiresIn = null;
-        if ($user->passwordExpiresAt !== null) {
-            $passwordExpiresIn = (new DateTime())->diff($user->passwordExpiresAt);
+        $passwordExpiresAt = $this->userService->getPasswordExpirationDate($user);
+        if ($passwordExpiresAt !== null) {
+            $passwordExpiresIn = (new DateTime())->diff($passwordExpiresAt);
         }
 
         return [
-            'is_password_expired' => $user->isPasswordExpired(),
-            'password_expires_at' => $user->passwordExpiresAt,
+            'is_password_expired' => $this->userService->isPasswordExpired($user),
+            'password_expires_at' => $passwordExpiresAt,
             'password_expires_in' => $passwordExpiresIn,
         ];
     }

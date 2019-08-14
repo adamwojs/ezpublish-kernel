@@ -50,6 +50,7 @@ use eZ\Publish\SPI\Persistence\Content\Location\Handler as LocationHandler;
 use eZ\Publish\SPI\Persistence\User as SPIUser;
 use eZ\Publish\SPI\Persistence\User\Handler;
 use eZ\Publish\SPI\Persistence\User\UserTokenUpdateStruct as SPIUserTokenUpdateStruct;
+use EzSystems\RepositoryForms\Form\Type\DateTimeIntervalType;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -1312,17 +1313,13 @@ class UserService implements UserServiceInterface
             );
         }
 
-        $passwordUpdatedAt = $this->getDateTime($spiUser->passwordUpdatedAt);
-        $passwordExpiresAt = $this->getPasswordExpiryDate($passwordUpdatedAt, $content);
-
         return new User(
             [
                 'content' => $content,
                 'login' => $spiUser->login,
                 'email' => $spiUser->email,
                 'passwordHash' => $spiUser->passwordHash,
-                'passwordUpdatedAt' => $passwordUpdatedAt,
-                'passwordExpiresAt' => $passwordExpiresAt,
+                'passwordUpdatedAt' => $this->getDateTime($spiUser->passwordUpdatedAt),
                 'hashAlgorithm' => (int)$spiUser->hashAlgorithm,
                 'enabled' => $spiUser->isEnabled,
                 'maxLogin' => (int)$spiUser->maxLogin,
@@ -1330,23 +1327,63 @@ class UserService implements UserServiceInterface
         );
     }
 
-    private function getPasswordExpiryDate(?DateTimeInterface $passwordUpdatedAt, APIContent $content): ?DateTimeInterface
+    public function isPasswordExpired(APIUser $user): bool
     {
-        $userFieldDefinition = $this->getUserFieldDefinition($content->getContentType());
-        if (!$userFieldDefinition) {
+        $passwordExpireAt = $this->getPasswordExpirationDate($user);
+        if ($passwordExpireAt === null) {
+            return false;
+        }
+
+        return $passwordExpireAt < new DateTime();
+    }
+
+    public function getPasswordExpirationDate(APIUser $user): ?DateTimeInterface
+    {
+        $passwordUpdatedAt = $user->passwordUpdatedAt;
+        if ($passwordUpdatedAt === null) {
             return null;
         }
 
-        $passwordExpireAfter = $userFieldDefinition->fieldSettings['PasswordExpireAfter'] ?? -1;
-        if ($passwordUpdatedAt instanceof DateTimeInterface && $passwordExpireAfter > 0) {
-            if ($passwordUpdatedAt instanceof DateTime) {
-                $passwordUpdatedAt = clone $passwordUpdatedAt;
-            }
-
-            return $passwordUpdatedAt->add(new DateInterval(sprintf("P%dD", $passwordExpireAfter)));
+        $definition = $this->getUserFieldDefinition($user->getContentType());
+        if ($definition === null) {
+            return null;
         }
 
-        return null;
+        $passwordExpireAfter = $definition->fieldSettings['PasswordExpireAfter'] ?? -1;
+        if ($passwordExpireAfter <= 0) {
+            return null;
+        }
+
+        if ($passwordUpdatedAt instanceof DateTime) {
+            $passwordUpdatedAt = DateTimeImmutable::createFromMutable($passwordUpdatedAt);
+        }
+
+        return $passwordUpdatedAt->add(new DateInterval(sprintf("P%dD", $passwordExpireAfter)));
+    }
+
+    public function getPasswordExpirationWarningDate(APIUser $user): ?DateTimeInterface
+    {
+        $passwordExpiresAt = $this->getPasswordExpirationDate($user);
+        dump($passwordExpiresAt);
+        if ($passwordExpiresAt === null) {
+            return null;
+        }
+
+        $definition = $this->getUserFieldDefinition($user->getContentType());
+        if ($definition === null) {
+            return null;
+        }
+
+        $passwordWarnBefore = $definition->fieldSettings['PasswordWarnBefore'] ?? -1;
+        if ($passwordWarnBefore <= 0) {
+            return null;
+        }
+
+        if ($passwordExpiresAt instanceof DateTime) {
+            $passwordExpiresAt = DateTimeImmutable::createFromMutable($passwordExpiresAt);
+        }
+
+        return $passwordExpiresAt->sub(new DateInterval(sprintf('P%dD', $passwordWarnBefore)));
     }
 
     private function getUserFieldDefinition(ContentType $contentType): ?FieldDefinition

@@ -20,7 +20,6 @@ use eZ\Publish\API\Repository\Values\Content\Content;
  * @property-read string $passwordHash
  * @property-read string $hashAlgorithm Hash algorithm used to hash the password
  * @property-read DateTimeInterface|null $passwordUpdatedAt
- * @property-read DateTimeInterface|null $passwordExpiresAt
  * @property-read bool $enabled User can not login if false
  * @property-read int $maxLogin Max number of time user is allowed to login
  */
@@ -88,13 +87,6 @@ abstract class User extends Content implements UserReference
     protected $passwordUpdatedAt;
 
     /**
-     * Datetime when the password expires.
-     *
-     * @var \DateTimeInterface|null
-     */
-    protected $passwordExpiresAt;
-
-    /**
      * Hash algorithm used to hash the password.
      *
      * @var int
@@ -128,19 +120,5 @@ abstract class User extends Content implements UserReference
     public function getUserId()
     {
         return $this->id;
-    }
-
-    /**
-     * Returns true if password is expired.
-     *
-     * @return bool
-     */
-    public function isPasswordExpired(): bool
-    {
-        if ($this->passwordExpiresAt !== null) {
-            return $this->passwordExpiresAt < new DateTime();
-        }
-
-        return false;
     }
 }
