@@ -11,6 +11,7 @@ namespace eZ\Publish\Core\QueryType\BuildIn;
 use eZ\Publish\API\Repository\Values\Content\Location;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\ParentLocationId;
+use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class ChildrenQueryType extends AbstractQueryType
@@ -26,8 +27,12 @@ final class ChildrenQueryType extends AbstractQueryType
 
         $resolver->setRequired(['location']);
         $resolver->setAllowedTypes('location', [Location::class, 'int']);
-        $resolver->setNormalizer('location', static function ($value): int {
-            return $value->id;
+        $resolver->setNormalizer('location', static function (Options $options, $value) {
+            if ($value instanceof Location) {
+                return $value->id;
+            }
+
+            return $value;
         });
     }
 

@@ -20,8 +20,8 @@ class AggregateCriterion extends CriterionHandler
         return $criterion instanceof Criterion\AggregateCriterion;
     }
 
-    public function handle(CriteriaConverter $converter, SelectQuery $query, Criterion $criterion, array $languageSettings): void
+    public function handle(CriteriaConverter $converter, SelectQuery $query, Criterion $criterion, array $languageSettings)
     {
-        $converter->convertCriteria($query, $criterion->criteria, $languageSettings);
+        return $converter->convertCriteria($query, $criterion->criteria, $languageSettings);
     }
 }
