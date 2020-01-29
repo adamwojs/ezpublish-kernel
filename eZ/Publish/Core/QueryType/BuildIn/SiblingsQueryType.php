@@ -10,10 +10,6 @@ namespace eZ\Publish\Core\QueryType\BuildIn;
 
 use eZ\Publish\API\Repository\Values\Content\Location;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion;
-use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LocationId;
-use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LogicalAnd;
-use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LogicalNot;
-use eZ\Publish\API\Repository\Values\Content\Query\Criterion\ParentLocationId;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class SiblingsQueryType extends AbstractQueryType
@@ -40,11 +36,6 @@ final class SiblingsQueryType extends AbstractQueryType
 
     protected function getQueryFilter(array $parameters): Criterion
     {
-        return new LogicalAnd([
-            new ParentLocationId($parameters['location']->parentLocationId),
-            new LogicalNot(
-                new LocationId($parameters['location']->id)
-            ),
-        ]);
+        return new Criterion\Sibling($parameters['location']);
     }
 }
