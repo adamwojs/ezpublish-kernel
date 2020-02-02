@@ -12,6 +12,7 @@ use eZ\Publish\API\Repository\Values\Content\Location;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Ancestor;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LocationId;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LogicalAnd;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LogicalNot;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -40,7 +41,7 @@ final class AncestorsQueryType extends AbstractQueryType
 
     protected function getQueryFilter(array $parameters): Criterion
     {
-        return new Criterion\LogicalAnd([
+        return new LogicalAnd([
             new Ancestor($parameters['location']->pathString),
             new LogicalNot(
                 new LocationId($parameters['location']->id)
