@@ -38,7 +38,7 @@ abstract class AbstractQueryType extends OptionsResolverBasedQueryType
     protected function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'filter' => static function (OptionsResolver $resolver) {
+            'filter' => static function (OptionsResolver $resolver): void {
                 $resolver->setDefaults([
                     'content_type' => [],
                     'visible_only' => true,
