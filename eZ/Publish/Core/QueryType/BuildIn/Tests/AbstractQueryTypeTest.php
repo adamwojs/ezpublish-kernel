@@ -73,7 +73,7 @@ abstract class AbstractQueryTypeTest extends TestCase
 
     final public function testGetSupportedParameters(): void
     {
-        $this->assertEquals(
+        $this->assertEqualsCanonicalizing(
             $this->getExpectedSupportedParameters(),
             $this->queryType->getSupportedParameters()
         );
