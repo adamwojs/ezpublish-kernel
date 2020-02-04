@@ -17,6 +17,7 @@ use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LogicalAnd;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LogicalNot;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Subtree;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Visibility;
+use eZ\Publish\API\Repository\Values\Content\Query\SortClause\Location\Priority;
 use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use eZ\Publish\Core\QueryType\BuildIn\AncestorsQueryType;
 use eZ\Publish\Core\QueryType\QueryType;
@@ -123,6 +124,56 @@ final class AncestorsQueryTypeTest extends AbstractQueryTypeTest
                 'offset' => 100,
             ]),
         ];
+
+        yield 'sort' => [
+            [
+                'location' => $location,
+                'sort' => [
+                    'target' => 'Location\Priority',
+                ],
+            ],
+            new Query([
+                'filter' => new LogicalAnd([
+                    new LogicalAnd([
+                        new Ancestor(self::EXAMPLE_LOCATION_PATH_STRING),
+                        new LogicalNot(
+                            new LocationId(self::EXAMPLE_LOCATION_ID)
+                        ),
+                    ]),
+                    new Visibility(Visibility::VISIBLE),
+                    new Subtree(self::ROOT_LOCATION_PATH_STRING),
+                ]),
+                'sortClauses' => [
+                    new Priority(Query::SORT_ASC),
+                ],
+            ]),
+        ];
+
+        yield 'sort by custom clause' => [
+            [
+                'location' => $location,
+                'sort' => [
+                    'target' => '\eZ\Publish\Core\QueryType\BuildIn\Tests\CustomSortClause',
+                    'direction' => 'desc',
+                    'data' => ['foo', 'bar', 'baz'],
+                ],
+            ],
+            new Query([
+                'filter' => new LogicalAnd([
+                    new LogicalAnd([
+                        new Ancestor(self::EXAMPLE_LOCATION_PATH_STRING),
+                        new LogicalNot(
+                            new LocationId(self::EXAMPLE_LOCATION_ID)
+                        ),
+                    ]),
+                    new Visibility(Visibility::VISIBLE),
+                    new Subtree(self::ROOT_LOCATION_PATH_STRING),
+                ]),
+                'sortClauses' => [
+                    new CustomSortClause('foo', 'bar', 'baz', Query::SORT_DESC),
+                ],
+            ]),
+        ];
     }
 
     protected function createQueryType(
@@ -139,6 +190,6 @@ final class AncestorsQueryTypeTest extends AbstractQueryTypeTest
 
     protected function getExpectedSupportedParameters(): array
     {
-        return ['filter', 'offset', 'limit', 'location'];
+        return ['filter', 'offset', 'limit', 'sort', 'location'];
     }
 }

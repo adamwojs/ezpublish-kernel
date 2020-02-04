@@ -15,6 +15,7 @@ use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LogicalAnd;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Sibling;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Subtree;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Visibility;
+use eZ\Publish\API\Repository\Values\Content\Query\SortClause\Location\Priority;
 use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use eZ\Publish\Core\QueryType\BuildIn\SiblingsQueryType;
 use eZ\Publish\Core\QueryType\QueryType;
@@ -100,6 +101,46 @@ final class SiblingsQueryTypeTest extends AbstractQueryTypeTest
                 'offset' => 100,
             ]),
         ];
+
+        yield 'basic sort' => [
+            [
+                'location' => $location,
+                'sort' => [
+                    'target' => 'Location\Priority',
+                ],
+            ],
+            new Query([
+                'filter' => new LogicalAnd([
+                    new Sibling($location),
+                    new Visibility(Visibility::VISIBLE),
+                    new Subtree(self::ROOT_LOCATION_PATH_STRING),
+                ]),
+                'sortClauses' => [
+                    new Priority(Query::SORT_ASC),
+                ],
+            ]),
+        ];
+
+        yield 'sort by custom clause' => [
+            [
+                'location' => $location,
+                'sort' => [
+                    'target' => '\eZ\Publish\Core\QueryType\BuildIn\Tests\CustomSortClause',
+                    'direction' => 'desc',
+                    'data' => ['foo', 'bar', 'baz'],
+                ],
+            ],
+            new Query([
+                'filter' => new LogicalAnd([
+                    new Sibling($location),
+                    new Visibility(Visibility::VISIBLE),
+                    new Subtree(self::ROOT_LOCATION_PATH_STRING),
+                ]),
+                'sortClauses' => [
+                    new CustomSortClause('foo', 'bar', 'baz', Query::SORT_DESC),
+                ],
+            ]),
+        ];
     }
 
     protected function createQueryType(
@@ -116,6 +157,6 @@ final class SiblingsQueryTypeTest extends AbstractQueryTypeTest
 
     protected function getExpectedSupportedParameters(): array
     {
-        return ['filter', 'offset', 'limit', 'location'];
+        return ['filter', 'offset', 'limit', 'sort', 'location'];
     }
 }

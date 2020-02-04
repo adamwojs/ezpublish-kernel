@@ -16,6 +16,7 @@ use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LogicalAnd;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Operator;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Subtree;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Visibility;
+use eZ\Publish\API\Repository\Values\Content\Query\SortClause\ContentName;
 use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use eZ\Publish\Core\QueryType\BuildIn\RelatedToContentQueryType;
 use eZ\Publish\Core\QueryType\QueryType;
@@ -100,6 +101,48 @@ final class RelatedToContentQueryTypeTest extends AbstractQueryTypeTest
                 'offset' => 100,
             ]),
         ];
+
+        yield 'basic sort' => [
+            [
+                'content' => self::EXAMPLE_CONTENT_ID,
+                'field' => self::EXAMPLE_FIELD,
+                'sort' => [
+                    'target' => 'ContentName',
+                ],
+            ],
+            new Query([
+                'filter' => new LogicalAnd([
+                    new FieldRelation(self::EXAMPLE_FIELD, Operator::CONTAINS, self::EXAMPLE_CONTENT_ID),
+                    new Visibility(Visibility::VISIBLE),
+                    new Subtree(self::ROOT_LOCATION_PATH_STRING),
+                ]),
+                'sortClauses' => [
+                    new ContentName(Query::SORT_ASC),
+                ],
+            ]),
+        ];
+
+        yield 'sort by custom clause' => [
+            [
+                'content' => self::EXAMPLE_CONTENT_ID,
+                'field' => self::EXAMPLE_FIELD,
+                'sort' => [
+                    'target' => '\eZ\Publish\Core\QueryType\BuildIn\Tests\CustomSortClause',
+                    'direction' => 'desc',
+                    'data' => ['foo', 'bar', 'baz'],
+                ],
+            ],
+            new Query([
+                'filter' => new LogicalAnd([
+                    new FieldRelation(self::EXAMPLE_FIELD, Operator::CONTAINS, self::EXAMPLE_CONTENT_ID),
+                    new Visibility(Visibility::VISIBLE),
+                    new Subtree(self::ROOT_LOCATION_PATH_STRING),
+                ]),
+                'sortClauses' => [
+                    new CustomSortClause('foo', 'bar', 'baz', Query::SORT_DESC),
+                ],
+            ]),
+        ];
     }
 
     protected function createQueryType(Repository $repository, ConfigResolverInterface $configResolver): QueryType
@@ -114,6 +157,6 @@ final class RelatedToContentQueryTypeTest extends AbstractQueryTypeTest
 
     protected function getExpectedSupportedParameters(): array
     {
-        return ['filter', 'offset', 'limit', 'content', 'field'];
+        return ['filter', 'offset', 'limit', 'sort', 'content', 'field'];
     }
 }
