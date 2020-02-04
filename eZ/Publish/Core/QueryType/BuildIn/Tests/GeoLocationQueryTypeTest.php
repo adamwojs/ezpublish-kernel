@@ -16,6 +16,7 @@ use eZ\Publish\API\Repository\Values\Content\Query\Criterion\MapLocationDistance
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Operator;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Subtree;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Visibility;
+use eZ\Publish\API\Repository\Values\Content\Query\SortClause\ContentName;
 use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use eZ\Publish\Core\QueryType\BuildIn\GeoLocationQueryType;
 use eZ\Publish\Core\QueryType\QueryType;
@@ -108,6 +109,44 @@ final class GeoLocationQueryTypeTest extends AbstractQueryTypeTest
                 'offset' => 100,
             ]),
         ];
+
+        yield 'sort' => [
+            $parameters + [
+                'sort' => [
+                    'target' => 'ContentName',
+                ],
+            ],
+            new Query([
+                'filter' => new LogicalAnd([
+                    $criterion,
+                    new Visibility(Visibility::VISIBLE),
+                    new Subtree(self::ROOT_LOCATION_PATH_STRING),
+                ]),
+                'sortClauses' => [
+                    new ContentName(Query::SORT_ASC),
+                ],
+            ]),
+        ];
+
+        yield 'sort by custom clause' => [
+            $parameters + [
+                'sort' => [
+                    'target' => '\eZ\Publish\Core\QueryType\BuildIn\Tests\CustomSortClause',
+                    'direction' => 'desc',
+                    'data' => ['foo', 'bar', 'baz'],
+                ],
+            ],
+            new Query([
+                'filter' => new LogicalAnd([
+                    $criterion,
+                    new Visibility(Visibility::VISIBLE),
+                    new Subtree(self::ROOT_LOCATION_PATH_STRING),
+                ]),
+                'sortClauses' => [
+                    new CustomSortClause('foo', 'bar', 'baz', Query::SORT_DESC),
+                ],
+            ]),
+        ];
     }
 
     protected function createQueryType(Repository $repository, ConfigResolverInterface $configResolver): QueryType
@@ -122,6 +161,6 @@ final class GeoLocationQueryTypeTest extends AbstractQueryTypeTest
 
     protected function getExpectedSupportedParameters(): array
     {
-        return ['filter', 'offset', 'limit', 'field', 'distance', 'latitude', 'longitude', 'operator'];
+        return ['filter', 'offset', 'limit', 'sort', 'field', 'distance', 'latitude', 'longitude', 'operator'];
     }
 }
