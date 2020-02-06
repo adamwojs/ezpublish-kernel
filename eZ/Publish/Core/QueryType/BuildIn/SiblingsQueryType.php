@@ -8,35 +8,24 @@ declare(strict_types=1);
 
 namespace eZ\Publish\Core\QueryType\BuildIn;
 
-use eZ\Publish\API\Repository\Values\Content\Location;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion;
-use Symfony\Component\OptionsResolver\Options;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use eZ\Publish\API\Repository\Values\Content\Query\Criterion\MatchNone;
 
-final class SiblingsQueryType extends AbstractQueryType
+final class SiblingsQueryType extends AbstractLocationQueryType
 {
     public static function getName(): string
     {
         return 'eZ:Siblings';
     }
 
-    protected function configureOptions(OptionsResolver $resolver): void
-    {
-        parent::configureOptions($resolver);
-
-        $resolver->setRequired(['location']);
-        $resolver->setAllowedTypes('location', [Location::class, 'int']);
-        $resolver->setNormalizer('location', function (Options $options, $value): Location {
-            if (is_int($value)) {
-                return $this->repository->getLocationService()->loadLocation($value);
-            }
-
-            return $value;
-        });
-    }
-
     protected function getQueryFilter(array $parameters): Criterion
     {
-        return new Criterion\Sibling($parameters['location']);
+        $location = $this->resolveLocation($parameters);
+
+        if ($location === null) {
+            return new MatchNone();
+        }
+
+        return new Criterion\Sibling($location);
     }
 }

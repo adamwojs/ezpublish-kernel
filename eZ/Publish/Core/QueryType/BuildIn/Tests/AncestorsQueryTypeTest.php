@@ -190,6 +190,6 @@ final class AncestorsQueryTypeTest extends AbstractQueryTypeTest
 
     protected function getExpectedSupportedParameters(): array
     {
-        return ['filter', 'offset', 'limit', 'sort', 'location'];
+        return ['filter', 'offset', 'limit', 'sort', 'location', 'content'];
     }
 }

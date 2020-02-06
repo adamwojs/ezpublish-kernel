@@ -19,6 +19,7 @@ use eZ\Publish\API\Repository\Values\Content\Query\SortClause\Location\Priority;
 use eZ\Publish\Core\MVC\ConfigResolverInterface;
 use eZ\Publish\Core\QueryType\BuildIn\ChildrenQueryType;
 use eZ\Publish\Core\QueryType\QueryType;
+use eZ\Publish\Core\Repository\Values\Content\Location;
 
 final class ChildrenQueryTypeTest extends AbstractQueryTypeTest
 {
@@ -26,9 +27,13 @@ final class ChildrenQueryTypeTest extends AbstractQueryTypeTest
 
     public function dataProviderForGetQuery(): iterable
     {
+        $location = new Location([
+            'id' => self::EXAMPLE_LOCATION_ID,
+        ]);
+
         yield 'basic' => [
             [
-                'location' => self::EXAMPLE_LOCATION_ID,
+                'location' => $location,
             ],
             new Query([
                 'filter' => new LogicalAnd([
@@ -41,7 +46,7 @@ final class ChildrenQueryTypeTest extends AbstractQueryTypeTest
 
         yield 'filter by visibility' => [
             [
-                'location' => self::EXAMPLE_LOCATION_ID,
+                'location' => $location,
                 'filter' => [
                     'visible_only' => false,
                 ],
@@ -56,7 +61,7 @@ final class ChildrenQueryTypeTest extends AbstractQueryTypeTest
 
         yield 'filter by content type' => [
             [
-                'location' => self::EXAMPLE_LOCATION_ID,
+                'location' => $location,
                 'filter' => [
                     'content_type' => [
                         'article',
@@ -81,7 +86,7 @@ final class ChildrenQueryTypeTest extends AbstractQueryTypeTest
 
         yield 'limit and offset' => [
             [
-                'location' => self::EXAMPLE_LOCATION_ID,
+                'location' => $location,
                 'limit' => 10,
                 'offset' => 100,
             ],
@@ -98,7 +103,7 @@ final class ChildrenQueryTypeTest extends AbstractQueryTypeTest
 
         yield 'basic sort' => [
             [
-                'location' => self::EXAMPLE_LOCATION_ID,
+                'location' => $location,
                 'sort' => [
                     'target' => 'Location\Priority',
                 ],
@@ -117,7 +122,7 @@ final class ChildrenQueryTypeTest extends AbstractQueryTypeTest
 
         yield 'sort by custom clause' => [
             [
-                'location' => self::EXAMPLE_LOCATION_ID,
+                'location' => $location,
                 'sort' => [
                     'target' => '\eZ\Publish\Core\QueryType\BuildIn\Tests\CustomSortClause',
                     'direction' => 'desc',
@@ -151,6 +156,6 @@ final class ChildrenQueryTypeTest extends AbstractQueryTypeTest
 
     protected function getExpectedSupportedParameters(): array
     {
-        return ['filter', 'offset', 'limit', 'sort', 'location'];
+        return ['filter', 'offset', 'limit', 'sort', 'location', 'content'];
     }
 }
