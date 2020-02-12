@@ -42,6 +42,9 @@ class IO extends AbstractParser
                         ->info('Prefix added to binary files uris. A host can also be added')
                         ->example('$var_dir$/$storage_dir$, http://static.example.com/')
                     ->end()
+                    ->scalarNode('root_dir')
+                        ->info('....')
+                    ->end()
                     ->arrayNode('permissions')
                         ->info('Permissions applied by the Local flysystem adapter when creating content files and directories in storage.')
                         ->children()
@@ -80,6 +83,10 @@ class IO extends AbstractParser
             if (isset($settings['permissions']['directories'])) {
                 $contextualizer->setContextualParameter('io.permissions.directories', $currentScope, $settings['permissions']['directories']);
             }
+        }
+
+        if (isset($settings['root_dir'])) {
+            $contextualizer->setContextualParameter('io.root_dir', $currentScope, $settings['root_dir']);
         }
     }
 

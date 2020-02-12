@@ -8,6 +8,7 @@
  */
 namespace eZ\Publish\Core\IO\IOBinarydataHandler;
 
+use Exception;
 use eZ\Publish\Core\IO\Exception\BinaryFileNotFoundException;
 use eZ\Publish\Core\IO\IOBinarydataHandler;
 use eZ\Publish\Core\IO\UrlDecorator;
@@ -27,6 +28,8 @@ class Flysystem implements IOBinaryDataHandler
 
     public function __construct(FilesystemInterface $filesystem, UrlDecorator $urlDecorator = null)
     {
+        dump(get_class($filesystem));
+        #dump(get_call_stack());
         $this->filesystem = $filesystem;
         $this->urlDecorator = $urlDecorator;
     }

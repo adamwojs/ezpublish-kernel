@@ -68,12 +68,27 @@ abstract class Flysystem implements ConfigurationFactory, ContainerAwareInterfac
             throw new InvalidConfigurationException("Unknown flysystem adapter $adapter");
         }
 
+//    ezpublish.core.io.flysystem.default_adapter:
+//        class: "%ezpublish.core.io.flysystem.default_adapter.class%"
+//        factory: ["@ezpublish.core.io.flysystem.local_adapter_factory", build]
+//        arguments:
+//            - "$io.root_dir$"
+//            - "$io.permissions.files$"
+//            - "$io.permissions.directories$"
+
+//        $adapterId = sprintf('ezpublish.core.io.flysystem.%s_adapter', $name);
+//        $adapterDefinition = $container->setDefinition(
+//            $adapterId,
+//            new DefinitionDecorator('ezpublish.core.io.flysystem.base_adapter')
+//        );
+//        $adapterDefinition->setArguments([new Reference($adapterId)]);
+
         $filesystemId = sprintf('ezpublish.core.io.flysystem.%s_filesystem', $name);
-        $definition = $container->setDefinition(
+        $fieldsystemDefinition = $container->setDefinition(
             $filesystemId,
             new DefinitionDecorator('ezpublish.core.io.flysystem.base_filesystem')
         );
-        $definition->setArguments([new Reference($adapterId)]);
+        $fieldsystemDefinition->setArguments([new Reference($adapterId)]);
 
         return $filesystemId;
     }

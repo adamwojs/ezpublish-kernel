@@ -113,6 +113,16 @@ services:
         calls:
             - [ setContainer, [ "@service_container" ] ]
 
+    ### ????
+    ezpublish.core.io.flysystem.base_adapter:
+        abstract: true
+        class: "%ezpublish.core.io.flysystem.default_adapter.class%"
+        factory: ["@ezpublish.core.io.flysystem.local_adapter_factory", build]
+        arguments:
+            - "$io.root_dir$"
+            - "$io.permissions.files$"
+            - "$io.permissions.directories$"
+
     # Inject the siteaccess config into a few io services
     ezpublish.core.io.flysystem.default_adapter:
         class: "%ezpublish.core.io.flysystem.default_adapter.class%"
