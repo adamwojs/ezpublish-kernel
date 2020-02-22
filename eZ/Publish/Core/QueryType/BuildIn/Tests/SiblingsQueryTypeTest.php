@@ -85,6 +85,21 @@ final class SiblingsQueryTypeTest extends AbstractQueryTypeTest
             ]),
         ];
 
+        yield 'filter by siteaccess' => [
+            [
+                'location' => $location,
+                'filter' => [
+                    'siteaccess_aware' => false,
+                ],
+            ],
+            new Query([
+                'filter' => new LogicalAnd([
+                    new Sibling($location),
+                    new Visibility(Visibility::VISIBLE),
+                ]),
+            ]),
+        ];
+
         yield 'limit and offset' => [
             [
                 'location' => $location,

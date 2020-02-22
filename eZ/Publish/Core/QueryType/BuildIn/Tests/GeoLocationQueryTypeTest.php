@@ -94,6 +94,20 @@ final class GeoLocationQueryTypeTest extends AbstractQueryTypeTest
             ]),
         ];
 
+        yield 'filter by siteaccess' => [
+            $parameters + [
+                'filter' => [
+                    'siteaccess_aware' => false,
+                ],
+            ],
+            new Query([
+                'filter' => new LogicalAnd([
+                    $criterion,
+                    new Visibility(Visibility::VISIBLE),
+                ]),
+            ]),
+        ];
+
         yield 'limit and offset' => [
             $parameters + [
                 'limit' => 10,

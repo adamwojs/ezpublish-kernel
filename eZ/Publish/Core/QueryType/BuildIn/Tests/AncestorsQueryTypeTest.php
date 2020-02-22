@@ -103,6 +103,26 @@ final class AncestorsQueryTypeTest extends AbstractQueryTypeTest
             ]),
         ];
 
+        yield 'filter by siteaccess' => [
+            [
+                'location' => $location,
+                'filter' => [
+                    'siteaccess_aware' => false,
+                ],
+            ],
+            new Query([
+                'filter' => new LogicalAnd([
+                    new LogicalAnd([
+                        new Ancestor(self::EXAMPLE_LOCATION_PATH_STRING),
+                        new LogicalNot(
+                            new LocationId(self::EXAMPLE_LOCATION_ID)
+                        ),
+                    ]),
+                    new Visibility(Visibility::VISIBLE),
+                ]),
+            ]),
+        ];
+
         yield 'limit and offset' => [
             [
                 'location' => $location,

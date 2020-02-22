@@ -84,6 +84,21 @@ final class ChildrenQueryTypeTest extends AbstractQueryTypeTest
             ]),
         ];
 
+        yield 'filter by siteaccess' => [
+            [
+                'location' => $location,
+                'filter' => [
+                    'siteaccess_aware' => false,
+                ],
+            ],
+            new Query([
+                'filter' => new LogicalAnd([
+                    new ParentLocationId(self::EXAMPLE_LOCATION_ID),
+                    new Visibility(Visibility::VISIBLE),
+                ]),
+            ]),
+        ];
+
         yield 'limit and offset' => [
             [
                 'location' => $location,

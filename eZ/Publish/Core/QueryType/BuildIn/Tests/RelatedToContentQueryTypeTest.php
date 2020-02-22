@@ -84,6 +84,22 @@ final class RelatedToContentQueryTypeTest extends AbstractQueryTypeTest
             ]),
         ];
 
+        yield 'filter by siteaccess' => [
+            [
+                'content' => self::EXAMPLE_CONTENT_ID,
+                'field' => self::EXAMPLE_FIELD,
+                'filter' => [
+                    'siteaccess_aware' => false,
+                ],
+            ],
+            new Query([
+                'filter' => new LogicalAnd([
+                    new FieldRelation(self::EXAMPLE_FIELD, Operator::CONTAINS, self::EXAMPLE_CONTENT_ID),
+                    new Visibility(Visibility::VISIBLE),
+                ]),
+            ]),
+        ];
+
         yield 'limit and offset' => [
             [
                 'content' => self::EXAMPLE_CONTENT_ID,

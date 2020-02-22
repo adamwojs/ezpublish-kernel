@@ -45,10 +45,12 @@ abstract class AbstractQueryType extends OptionsResolverBasedQueryType
                 $resolver->setDefaults([
                     'content_type' => [],
                     'visible_only' => true,
+                    'siteaccess_aware' => true,
                 ]);
 
                 $resolver->setAllowedTypes('content_type', 'array');
                 $resolver->setAllowedTypes('visible_only', 'bool');
+                $resolver->setAllowedTypes('siteaccess_aware', 'bool');
             },
             'offset' => 0,
             'limit' => self::DEFAULT_LIMIT,
@@ -109,8 +111,10 @@ abstract class AbstractQueryType extends OptionsResolverBasedQueryType
             $criteria[] = new ContentTypeIdentifier($parameters['filter']['content_type']);
         }
 
-        // Limit results to current SiteAccess tree root
-        $criteria[] = new Subtree($this->getRootLocationPathString());
+        if ($parameters['filter']['siteaccess_aware']) {
+            // Limit results to current SiteAccess tree root
+            $criteria[] = new Subtree($this->getRootLocationPathString());
+        }
 
         return new LogicalAnd($criteria);
     }
