@@ -15,7 +15,11 @@ use eZ\Publish\API\Repository\Values\Content\Query\Criterion\ContentTypeIdentifi
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\LogicalAnd;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Subtree;
 use eZ\Publish\API\Repository\Values\Content\Query\Criterion\Visibility;
+use eZ\Publish\API\Repository\Values\Content\Query\SortClause;
 use eZ\Publish\Core\MVC\ConfigResolverInterface;
+use eZ\Publish\Core\QueryType\BuildIn\SortClauseSpec\SpecLexer;
+use eZ\Publish\Core\QueryType\BuildIn\SortClauseSpec\SpecParser;
+use eZ\Publish\Core\QueryType\BuildIn\SortClauseSpec\SpecParserFactory;
 use eZ\Publish\Core\QueryType\OptionsResolverBasedQueryType;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -32,10 +36,17 @@ abstract class AbstractQueryType extends OptionsResolverBasedQueryType
     /** @var \eZ\Publish\Core\MVC\ConfigResolverInterface */
     protected $configResolver;
 
-    public function __construct(Repository $repository, ConfigResolverInterface $configResolver)
-    {
+    /** @var \eZ\Publish\Core\QueryType\BuildIn\SortClauseSpec\SpecParserFactory */
+    private $sortSpecParserFactory;
+
+    public function __construct(
+        Repository $repository,
+        ConfigResolverInterface $configResolver,
+        SpecParserFactory $sortSpecParserFactory
+    ) {
         $this->repository = $repository;
         $this->configResolver = $configResolver;
+        $this->sortSpecParserFactory = $sortSpecParserFactory;
     }
 
     protected function configureOptions(OptionsResolver $resolver): void
@@ -54,24 +65,18 @@ abstract class AbstractQueryType extends OptionsResolverBasedQueryType
             },
             'offset' => 0,
             'limit' => self::DEFAULT_LIMIT,
-            'sort' => static function (OptionsResolver $resolver): void {
-                $resolver->setDefault('target', null);
-                $resolver->setAllowedTypes('target', ['null', 'string']);
-
-                $resolver->setDefault('direction', 'asc');
-                $resolver->setAllowedValues('direction', ['asc', 'desc']);
-                $resolver->setNormalizer('direction', function (Options $options, $direction) {
-                    if (strtolower($direction) === 'desc') {
-                        return Query::SORT_DESC;
-                    }
-
-                    return Query::SORT_ASC;
-                });
-
-                $resolver->setDefault('data', null);
-            },
+            'sort' => null,
         ]);
 
+        $resolver->setNormalizer('sort', static function (Options $options, $value) {
+            if (is_string($value)) {
+                $value = $this->sortSpecParserFactory->create()->parse($value);
+            }
+
+            return $value;
+        });
+
+        $resolver->setAllowedTypes('sort', ['null', 'string', 'array', SortClause::class]);
         $resolver->setAllowedTypes('offset', 'int');
         $resolver->setAllowedTypes('limit', 'int');
     }
@@ -83,12 +88,8 @@ abstract class AbstractQueryType extends OptionsResolverBasedQueryType
         $query = new Query();
         $query->filter = $this->buildFilters($parameters);
 
-        if ($parameters['sort']['target'] !== null) {
-            $query->sortClauses = $this->buildSortClauses(
-                $parameters['sort']['target'],
-                $parameters['sort']['direction'],
-                $parameters['sort']['data'] ?? []
-            );
+        if ($parameters['sort'] !== null) {
+            $query->sortClauses = (array)$parameters['sort'];
         }
 
         $query->limit = $parameters['limit'];
