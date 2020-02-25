@@ -6,12 +6,17 @@
  */
 declare(strict_types=1);
 
-namespace eZ\Publish\Core\QueryType\BuildIn\SortClauseSpec;
+namespace eZ\Publish\Core\QueryType\BuildIn;
 
-interface SpecParserInterface
+/**
+ * @internal
+ */
+interface SortClausesFactoryInterface
 {
     /**
      * @return \eZ\Publish\API\Repository\Values\Content\Query\SortClause[]
+     *
+     * @throws \eZ\Publish\Core\QueryType\BuildIn\SortSpec\Exception\SyntaxErrorException
      */
-    public function parse(string $input): array;
+    public function createFromSpecification(string $specification): array;
 }

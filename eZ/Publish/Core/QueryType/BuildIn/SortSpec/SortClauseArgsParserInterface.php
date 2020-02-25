@@ -6,13 +6,16 @@
  */
 declare(strict_types=1);
 
-namespace eZ\Publish\Core\QueryType\BuildIn\SortClauseSpec;
+namespace eZ\Publish\Core\QueryType\BuildIn\SortSpec;
 
 use eZ\Publish\API\Repository\Values\Content\Query\SortClause;
 
-interface SortClauseParser
+interface SortClauseArgsParserInterface
 {
-    public function parse(SpecParser $parser, string $name): SortClause;
+    /**
+     * @throws \eZ\Publish\Core\QueryType\BuildIn\SortSpec\Exception\UnsupportedSortClauseException If sort clause is not supported by parser
+     */
+    public function parse(SortSpecParser $parser, string $name): SortClause;
 
     public function supports(string $name): bool;
 }
