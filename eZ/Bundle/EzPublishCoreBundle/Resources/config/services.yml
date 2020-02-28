@@ -211,8 +211,20 @@ services:
         tags:
             - { name: controller.service_arguments }
 
+    ezpublish.controller.query_render:
+        class: eZ\Publish\Core\MVC\Symfony\Controller\Content\QueryRenderController
+        arguments:
+            - "@ezpublish.api.service.search"
+            - "@ezpublish.query_type.registry"
+        tags:
+            - { name: controller.service_arguments }
+
     ez_query:
         alias: ezpublish.controller.query
+        public: true
+
+    ez_query_render:
+        alias: ezpublish.controller.query_render
         public: true
 
     ezplatform.core.jms_translation.catalog_mapper_file_writer:

@@ -8,6 +8,8 @@
  */
 namespace eZ\Publish\API\Repository\Values\Content;
 
+use eZ\Publish\API\Repository\SearchService;
+use eZ\Publish\API\Repository\Values\Content\Search\SearchResult;
 use eZ\Publish\API\Repository\Values\ValueObject;
 
 /**
@@ -99,4 +101,12 @@ class Query extends ValueObject
      * @var bool
      */
     public $performCount = true;
+//
+//    /**
+//     * @throws \eZ\Publish\API\Repository\Exceptions\InvalidArgumentException
+//     */
+//    public function execute(SearchService $searchService, array $languageFilter = [], bool $filterOnUserPermissions = true): SearchResult
+//    {
+//        return $searchService->findContent($this, $languageFilter, $filterOnUserPermissions);
+//    }
 }

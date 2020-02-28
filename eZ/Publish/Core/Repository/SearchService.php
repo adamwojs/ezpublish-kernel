@@ -80,6 +80,11 @@ class SearchService implements SearchServiceInterface
         $this->backgroundIndexer = $backgroundIndexer;
     }
 
+    public function find(Query $query, array $languageFilter = [], bool $filterOnUserPermissions = true): SearchResult
+    {
+
+    }
+
     /**
      * Finds content objects for the given query.
      *

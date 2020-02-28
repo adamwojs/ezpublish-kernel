@@ -107,6 +107,22 @@ interface SearchService
      */
     public const CAPABILITY_ADVANCED_FULLTEXT = 64;
 
+//    /**
+//     * Finds value objects matching the given query.
+//     *
+//     * @throws \eZ\Publish\API\Repository\Exceptions\InvalidArgumentException if query is not valid
+//     *
+//     * @param \eZ\Publish\API\Repository\Values\Content\Query $query
+//     * @param array $languageFilter Configuration for specifying prioritized languages query will be performed on.
+//     *        Also used to define which field languages are loaded for the returned content.
+//     *        Currently supports: <code>array("languages" => array(<language1>,..), "useAlwaysAvailable" => bool)</code>
+//     *                            useAlwaysAvailable defaults to true to avoid exceptions on missing translations
+//     * @param bool $filterOnUserPermissions if true only the objects which the user is allowed to read are returned.
+//     *
+//     * @return \eZ\Publish\API\Repository\Values\Content\Search\SearchResult
+//     */
+//    public function find(Query $query, array $languageFilter = [], bool $filterOnUserPermissions = true): SearchResult;
+
     /**
      * Finds content objects for the given query.
      *
